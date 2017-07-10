@@ -1,0 +1,8 @@
+{
+  "email" : {"provider" : "mandrill" , "password" : "" , "username" : ""},
+  "sms" : {"provider" : "mandrill" , "password" : "" , "username" : ""},
+  "web-push" : {"provider" : "mandrill" , "password" : "" , "username" : ""},
+  "email-internal" : {"provider" : "mandrill" , "password" : "" , "username" : ""},
+  "email-promotional" : {"provider" : "mandrill" , "password" : "" , "username" : ""},
+  "sms-promotional" : {"provider" : "mandrill" , "password" : "" , "username" : ""}
+}

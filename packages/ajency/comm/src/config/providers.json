@@ -1,0 +1,36 @@
+{
+  "mandrill" : [
+    {
+      "event" : "welcome",
+      "template" : "welcome-email-new"
+    },
+    {
+      "event" : "",
+      "template" : "",
+      "active" : false
+    },
+    {
+      "event" : "",
+      "template" : "",
+      "active" : false
+    }
+  ],
+  "pushcrew" : [
+    {
+      "event" : "welcome",
+      "template" : "welcome-email-new"
+    },
+    {
+      "event" : "",
+      "template" : "",
+      "active" : false
+    },
+    {
+      "event" : "",
+      "template" : "",
+      "active" : false
+    }
+  ]
+}
+
+
