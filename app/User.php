@@ -14,11 +14,15 @@ class User extends Authenticatable
 
         static::created(function($user) {
 
-            print_r($user);
+            $sub = new \Ajency\Comm\API\Subscription();
+            $sub->setEmails($user->email);
+            $sub->setUserId($user->id);
+            $sub->create_or_update_subscription();
+
             $event = [
                 'event' => 'welcome',
                 'provider_params' => [
-                    'name' => 'Antonio',
+                    'name' => $user->name,
                 ],
                 'channels' => ['email']
             ];

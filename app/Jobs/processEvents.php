@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class processEvents implements ShouldQueue
 {
@@ -45,11 +46,24 @@ class processEvents implements ShouldQueue
         switch ($notification['channel']) {
             case 'web-push':
                 $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider',$notification['provider'])->where('user_id',$notification['recepients'][0] )->value('subscriber_id');
+
+                //TODO - move to a file that can switch between multiple providers
+
                 $pushcrew = new Pushcrew();
                 $pushcrew->sendNotification($notification['provider_params'],$subscriber_id);
+
+
                 break;
             case 'email':
-                $notification['email_id'] = DB::table('aj_comm_subscriber_emails')->where('user_id',$notification['recepients'][0])->value('email');
+
+                //TODO - move to a file that can switch between multiple providers
+                $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id',$notification['recepients'][0])->value('email');
+
+                Mail::send('email.hello-user', $notification['provider_params'], function ($m) use ($email_id) {
+                    $m->to($email_id)->subject('Welcome to the jungle!');
+                });
+
+/*                return response()->json(['message' => 'Request completed']);*/
 
                 break;
             case 'mobile':
@@ -61,4 +75,13 @@ class processEvents implements ShouldQueue
             //Dispatch to error log - TODO
         }
     }
+
+    /*
+     * TODO
+     * Seperate function for each channel provider
+     * Jobs in package
+     * Loggin oif failure and warning
+     * Login of every message
+     * Production queue
+     */
 }

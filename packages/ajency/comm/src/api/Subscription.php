@@ -109,11 +109,12 @@ class Subscription {
      */
     public function create_or_update_subscription() {
 
+        $webpushes = [];
+        $emails = [];
+        $mobiles = [];
+
         if($this->webpush_ids !== null) {
 
-            $webpushes = [];
-            $emails = [];
-            $mobiles = [];
             $single = false;
             if(is_array($this->webpush_ids)) {
                 foreach($this->webpush_ids as $k => $v) {
@@ -175,7 +176,7 @@ class Subscription {
         }catch(\Exception $e){
             //TODO - ?
             DB::rollBack();
-            return ['success' => false, 'message' => $e->getMessage()];
+            return ['success' => false, 'message' => $e];
         }
     }
 
@@ -190,7 +191,7 @@ class Subscription {
                         $email = [];
                         $email['is_primary'] = isset($v['is_primary']) ? $v['is_primary'] : false;
                         $email[$key] = $v[$key];
-                        $email['user_id'] = isset($v['user_id']) ? $v['user_id'] : $this->getUserId();
+                        $email['user_id'] = $this->getUserId();
                         $emails[] = $email;
                     }
                 } else {
@@ -200,14 +201,14 @@ class Subscription {
                 }
             }
             if($single) {
-                $array['user_id'] = isset($array['user_id']) ? $array['user_id'] : $this->getUserId();
+                $array['user_id'] = $this->getUserId();
                 $emails[] = $array;
             }
         } else {
             $email = [];
             $email['is_primary'] = false;
             $email[$key] = $array;
-            $email['user_id'] = isset($email['user_id']) ? $email['user_id'] : $this->getUserId();
+            $email['user_id'] = $this->getUserId();
             $emails[] = $email;
         }
         return $emails;
@@ -225,7 +226,7 @@ class Subscription {
                         $email = [];
                         $email['is_primary'] = isset($v['is_primary']) ? $v['is_primary'] : false;
                         $email[$key] = $v[$key];
-                        $email['user_id'] = isset($v['user_id']) ? $v['user_id'] : $this->getUserId();
+                        $email['user_id'] = $this->getUserId();
                         $email['country_code'] = $this->getDefaultCountryCode();
                         $emails[] = $email;
                     }
@@ -237,7 +238,7 @@ class Subscription {
             }
             if($single) {
                 $array['is_primary'] = isset($array['is_primary']) ? $array['is_primary'] : false;
-                $array['user_id'] = isset($array['user_id']) ? $array['user_id'] : $this->getUserId();
+                $array['user_id'] = $this->getUserId();
                 $array['country_code'] = $this->getDefaultCountryCode();
                 $emails[] = $array;
             }
@@ -245,7 +246,7 @@ class Subscription {
             $email = [];
             $email['is_primary'] = false;
             $email[$key] = $array;
-            $email['user_id'] = isset($email['user_id']) ? $email['user_id'] : $this->getUserId();
+            $email['user_id'] = $this->getUserId();
             $email['country_code'] = $this->getDefaultCountryCode();
             $emails[] = $email;
         }

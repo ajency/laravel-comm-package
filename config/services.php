@@ -40,5 +40,4 @@ return [
         'client_secret' => 'your-github-app-secret',
         'redirect' => 'http://your-callback-url',
     ],
-
 ];

@@ -2,7 +2,8 @@
   "welcome" :
     {
       "mandrill" : "welcome",
-      "pushcrew" : "welcome-email-new"
+      "pushcrew" : "welcome-email-new",
+      "laravel" : "hello-user"
     },
   "reset-password" : {
     "sendgrid" : "reset-password-new",

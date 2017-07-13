@@ -15,16 +15,28 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+
+Route::get('test6', function () {
+
+    $email = 'antonio+22@ajency.in';
+    $sub = new \Ajency\Comm\API\Subscription();
+    $sub->setEmails($email);
+    dd($sub->create_or_update_subscription());
+
+});
+
 Route::get('test3', function () {
 
     $event = [
         'event' => 'welcome',
-        'template_vars' => [
+        'provider_params' => [
             'name' => 'Antonio',
         ],
+        'channels' => ['email']
     ];
     $notify = new \Ajency\Comm\API\Notification();
-    $notify->send_notification($event,[55]);
+    $notify->send_notification($event,[10]);
 });
 
 Route::get('test2', function () {
