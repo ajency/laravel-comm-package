@@ -118,16 +118,16 @@ class Subscription {
             if(is_array($this->webpush_ids)) {
                 foreach($this->webpush_ids as $k => $v) {
                     if(is_array($v)) {
-                        if ($v['provider_key'] && $v['provider_id'])
+                        if ($v['provider'] && $v['subscriber_id'])
                         {
                             $email = [];
-                            $email['provider_key'] = $v['provider_key'];
-                            $email['provider_id'] = $v['provider_id'];
+                            $email['provider'] = $v['provider'];
+                            $email['subscriber_id'] = $v['subscriber_id'];
                             $email['user_id'] = isset($v['user_id']) ? $v['user_id'] : $this->getUserId();
                             $webpushes[] = $email;
                         }
                     } else {
-                        if ($this->webpush_ids['provider_key'] && $this->webpush_ids['provider_id'])
+                        if ($this->webpush_ids['provider'] && $this->webpush_ids['subscriber_id'])
                         {
                             $single = true;
                         }
@@ -169,8 +169,11 @@ class Subscription {
             }
 
             DB::commit();
+
+            //TODO - add success string to lang file
             return ['success' => true, 'message' => 'Subscription stored for user successfully'];
         }catch(\Exception $e){
+            //TODO - ?
             DB::rollBack();
             return ['success' => false, 'message' => $e->getMessage()];
         }

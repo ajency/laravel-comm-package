@@ -94,7 +94,7 @@
             })(window,document);
 
 
-          /*  window._pcq = window._pcq || [];
+            window._pcq = window._pcq || [];
             _pcq.push(['subscriptionSuccessCallback',callbackFunctionOnSuccessfulSubscription]); //registers callback function to be called when user gets successfully subscribed
 
             function callbackFunctionOnSuccessfulSubscription(subscriberId, values) {
@@ -107,6 +107,19 @@
                 console.log(values.message) // 'User has subscribed to push notifications.' or 'User is already subscribed to push notifications.'
 
                 console.log('Now you may run code which should be executed once user gets successfully subscribed.');
+
+                if(values.status == 'SUBSCRIBED') {
+                    var subscriber_id = subscriberId;
+                    var provider = 'pushcrew';
+                    $.ajax({
+                        type: "POST",
+                        url: 'http://127.0.0.1:8000' + '/subscription/web-push',
+                        data: { subscriber_id: subscriber_id, provider: provider,  "_token": "{{ csrf_token() }}", },
+                        success: function( msg ) {
+                            $("#ajaxResponse").append("<div>"+msg+"</div>");
+                        }
+                    });
+                }
             }
 
             window._pcq = window._pcq || [];
@@ -120,11 +133,12 @@
                 console.log(values.message) // 'User has blocked push notifications.', 'User has unsubscribed from push notifications', 'No change in subscription. Child window was closed.' or 'User has closed the notifications opt-in.'
 
                 console.log('Now you may run code which should be executed once user subscription fails');
-            }*/
+            }
 
             _pcq.push(['APIReady', callbackFunction]);
 
             function callbackFunction() {
+
                 console.log(pushcrew.subscriberId); // will return something like this if current user is a subscriber '1c5d546172cfb4be65a8d51b047c4804'
 
                 console.log(pushcrew.subscriberId); // will return false(boolean) if user is not subscribed to push notifications

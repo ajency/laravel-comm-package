@@ -12,9 +12,9 @@ class Pushcrew {
     function sendNotification($message,$identity) {
         $post = [
             "title" => $message['title'],
-            "message" => $message['title'],
-            "url" => $message['title'],
-            "image_url" => $message['title'],
+            "message" => $message['message'],
+            "url" => $message['url'],
+            "image_url" => $message['image_url'],
             "subscriber_id" => $identity
         ];
         $ch = curl_init($this->url);
@@ -25,6 +25,7 @@ class Pushcrew {
         ));
         $response = curl_exec($ch);
         curl_close($ch);
+        //TODO save log for notification
         var_dump($response);
     }
 }

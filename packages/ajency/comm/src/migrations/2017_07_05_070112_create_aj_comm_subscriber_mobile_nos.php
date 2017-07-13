@@ -20,7 +20,7 @@ class CreateAjCommSubscriberMobileNos extends Migration
             $table->boolean('is_primary');
             $table->timestamps();
             $table->unique(['mobile_no','country_code'],'mobiles_unq');
-            $table->primary(['user_id', 'country_code', 'country_code'],'mobiles_pk');
+            $table->primary(['user_id', 'country_code', 'mobile_no'],'mobiles_pk');
         });
     }
 

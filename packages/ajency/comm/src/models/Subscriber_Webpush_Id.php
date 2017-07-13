@@ -7,9 +7,4 @@ class Subscriber_Webpush_Id extends Model
 {
     protected $table = 'aj_comm_subscriber_webpush_ids'; //can make this a config?
     public $incrementing = false;
-
-    public static function get(){
-        return "asdasdadasd";
-    }
-
 }

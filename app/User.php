@@ -7,6 +7,26 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+
+    public static function boot() {
+
+        parent::boot();
+
+        static::created(function($user) {
+
+            print_r($user);
+            $event = [
+                'event' => 'welcome',
+                'provider_params' => [
+                    'name' => 'Antonio',
+                ],
+                'channels' => ['email']
+            ];
+            $notify = new \Ajency\Comm\API\Notification();
+            $notify->send_notification($event,[$user->id]);
+        });
+    }
+
     use Notifiable;
 
     /**

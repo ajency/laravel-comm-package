@@ -15,15 +15,32 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('test3', function () {
+
+    $event = [
+        'event' => 'welcome',
+        'template_vars' => [
+            'name' => 'Antonio',
+        ],
+    ];
+    $notify = new \Ajency\Comm\API\Notification();
+    $notify->send_notification($event,[55]);
+});
 
 Route::get('test2', function () {
 
-    $not = new \Ajency\Comm\Providers\Pushcrew();
-    $msg['title'] = 'dfasdasdasdasdasd';
-    $msg['message'] = 'asdasd asd asd asd asd asd asd asd asd asd a';
-    $msg['url'] = '/welcome';
-    $msg['image_url'] = 'https://learninglaravel.net/img/logo.png';
-    $not->sendNotification($msg,'ff9b05c170f427dbfe38fbfee7f8abe0');
+    $event = [
+        'event' => 'welcome',
+        'provider_params' => [
+            'title' => 'Hi, Thank you for registering with Ajency push',
+            'message' => 'Click here to know more about Push notification, edit your push settings using the gear icon above',
+            'url' => 'http://127.0.0.1:8000/benefits',
+            'image_url' => 'https://scontent.fdel1-1.fna.fbcdn.net/v/t1.0-1/c28.28.345.345/s50x50/485505_10151614542753486_1618802863_n.jpg?oh=d6831999d41e5e44c63ec62e0ac379f8&oe=59F74C83',
+        ],
+        'channels' => ['web-push']
+    ];
+    $notify = new \Ajency\Comm\API\Notification();
+    $notify->send_notification($event,[9]);
 });
 
 Route::get('test', function () {
@@ -72,3 +89,6 @@ Route::get('auth/{provider}/callback', 'Auth\AuthController@handleProviderCallba
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/benefits', 'HomeController@benefits');
+
+Route::post('/subscription/web-push', 'SubscriptionController@createWebPushSubscription');

@@ -1,0 +1,13 @@
+{
+  "welcome" :
+    {
+      "mandrill" : "welcome",
+      "pushcrew" : "welcome-email-new"
+    },
+  "reset-password" : {
+    "sendgrid" : "reset-password-new",
+    "pushcrew" : "reset-password-push-new"
+  }
+}
+
+
