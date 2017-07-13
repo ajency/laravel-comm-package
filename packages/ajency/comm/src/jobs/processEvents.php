@@ -75,5 +75,6 @@ class processEvents implements ShouldQueue
      * Loggin oif failure and warning
      * Login of every message
      * Production queue
+     * Config as PHP file
      */
 }

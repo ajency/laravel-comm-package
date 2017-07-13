@@ -15,6 +15,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('test1', function () {
+
+dd(config('aj-comm-events'));
+
+
+});
 
 
 Route::get('test6', function () {

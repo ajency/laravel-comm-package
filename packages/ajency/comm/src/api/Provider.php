@@ -19,8 +19,8 @@ class Provider {
     public function getProvidersForEvent($event, $recepients = [])
     {
         $provider_jobs = [];
-        $events = $this->getConfig('events');
-        $channels = $this->getConfig('channels');
+        $channels = config('aj-comm-channels');
+        $events = config('aj-comm-events');
 
         foreach($channels as $channel => $settings) { //for each channel
             if(!$event['channels'] || ($event['channels'] && in_array($channel,$event['channels']))) { //Keep only channels required for the event
@@ -41,11 +41,5 @@ class Provider {
             }
         }
         return $provider_jobs;
-    }
-
-    public function getConfig($config) {
-
-        //TODO set config
-        return json_decode(file_get_contents(base_path().'/config/aj-comm/'.$config.'.json'), true);
     }
 }

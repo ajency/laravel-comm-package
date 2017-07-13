@@ -14,5 +14,10 @@ class CommServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom( __DIR__ . '/migrations');
+
+        $this->publishes([
+            __DIR__.'/config/aj-comm-channels.php' => config_path('aj-comm-channels.php'),
+            __DIR__.'/config/aj-comm-events.php' => config_path('aj-comm-events.php'),
+        ]);
     }
 }

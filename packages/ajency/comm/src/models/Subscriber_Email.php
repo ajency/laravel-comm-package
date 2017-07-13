@@ -2,6 +2,7 @@
 namespace Ajency\Comm\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
 
 class Subscriber_Email extends Model
 {
@@ -59,6 +60,32 @@ class Subscriber_Email extends Model
         $this->is_primary = $is_primary;
     }
 
+
+    function send($notification,$email_id) {
+
+
+
+        switch ($notification['provider']) {
+            case 'laravel':
+
+                Mail::send('email.hello-user', $notification['provider_params'], function ($m) use ($email_id) {
+                    $m->to($email_id)->subject('Welcome to the jungle!');
+                });
+
+                break;
+
+            case 'mandrill':
+                //TODO
+                break;
+
+            case 'sendgrid':
+                //TODO
+                break;
+        }
+
+
+
+    }
 
 
 
