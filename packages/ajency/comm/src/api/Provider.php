@@ -1,6 +1,9 @@
 <?php
 namespace Ajency\Comm\API;
 
+use Ajency\Comm\Models\Error;
+use Illuminate\Support\Facades\Auth;
+
 class Provider {
 
 
@@ -14,6 +17,8 @@ class Provider {
      * Provider needs to be active globally first
      * If active, for the event provider needs to be either defined, with a template or not set to false
      *
+     * Consider this a magic funtion
+     *
      */
 
     public function getProvidersForEvent($event, $recepients = [])
@@ -21,10 +26,10 @@ class Provider {
         $provider_jobs = [];
         $channels = config('aj-comm-channels');
         $events = config('aj-comm-events');
-
         foreach($channels as $channel => $settings) { //for each channel
-            if(!$event['channels'] || ($event['channels'] && in_array($channel,$event['channels']))) { //Keep only channels required for the event
-                if($settings['provider'] !== false) { //we check if a provider is set
+            if(!$event['channels'] || ($event['channels'] && in_array($channel,$event['channels']))) { //Keep only channels specified as required for the event
+
+                if($settings['provider'] !== false) { //we check if a provider is not diabled
                     if(isset($events[$event['event']][$settings['provider']])) { //we then check if the provider has the event defined
                         $data['channel'] = $channel;
                         $data['event'] = $event['event'];
@@ -33,9 +38,11 @@ class Provider {
                         $data['provider_params'] = isset($event['provider_params']) ? $event['provider_params'] : null;
                         $data['recepients'] = $recepients;
                         $provider_jobs[] = $data;
-                    } else {
-                        //TODO log as a warning that provider template is not defined
-
+                    } else { //incase it does not we should log this as a warning to aid the developer
+                        $error = new Error();
+                        $error->setUserId(Auth::id());
+                        $error->setMessage($settings['provider']. 'provider does not have template defined for event '.$event['event']);
+                        $error->setLevel(2);
                     }
                 }
             }

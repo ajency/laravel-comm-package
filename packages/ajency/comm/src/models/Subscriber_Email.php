@@ -1,6 +1,7 @@
 <?php
 namespace Ajency\Comm\Models;
 
+use Ajency\Comm\Providers\Laravel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 
@@ -61,17 +62,13 @@ class Subscriber_Email extends Model
     }
 
 
-    function send($notification,$email_id) {
-
+    function send($notification) {
 
 
         switch ($notification['provider']) {
             case 'laravel':
-
-                Mail::send('email.hello-user', $notification['provider_params'], function ($m) use ($email_id) {
-                    $m->to($email_id)->subject('Welcome to the jungle!');
-                });
-
+                $laravel = new Laravel();
+                $laravel->sendNotification($notification);
                 break;
 
             case 'mandrill':

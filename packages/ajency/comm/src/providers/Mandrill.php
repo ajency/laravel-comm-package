@@ -7,7 +7,7 @@ use GuzzleHttp\Psr7\Request;
 
 class Mandrill {
 
-    private $url = 'https://pushcrew.com/api/v1/send/individual';
+    private $url = '';
 
     function sendNotification($message,$identity) {
 

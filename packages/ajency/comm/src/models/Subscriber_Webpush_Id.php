@@ -9,13 +9,13 @@ class Subscriber_Webpush_Id extends Model
     protected $table = 'aj_comm_subscriber_webpush_ids'; //can make this a config?
     public $incrementing = false;
 
-    function send($notification,$subscriber_id) {
+    function send($notification) {
 
 
         switch ($notification['provider']) {
             case 'pushcrew':
                 $pushcrew = new Pushcrew();
-                $pushcrew->sendNotification($notification['provider_params'],$subscriber_id);
+                $pushcrew->sendNotification($notification);
                 break;
             case 'clevertap':
                 //TODO

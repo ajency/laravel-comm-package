@@ -4,7 +4,7 @@ return [
         [
             "mandrill" => "welcome",
             "pushcrew" => "welcome-email-new",
-            "laravel" => "hello-user"
+            "laravel" => "email.hello-user"
         ],
     "reset-password" => [
         "sendgrid" => "reset-password-new",

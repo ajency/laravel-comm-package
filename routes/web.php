@@ -16,9 +16,18 @@ Route::get('/', function () {
 });
 
 Route::get('test1', function () {
-
-dd(config('aj-comm-events'));
-
+    $event = [
+        'event' => 'welcome',
+        'provider_params' => [
+            /*'title' => 'Hi, Thank you for registering with Ajency push',*/
+            'message' => 'Click here to know more about Push notification, edit your push settings using the gear icon above',
+            'url' => 'http://127.0.0.1:8000/benefits',
+            'image_url' => 'https://scontent.fdel1-1.fna.fbcdn.net/v/t1.0-1/c28.28.345.345/s50x50/485505_10151614542753486_1618802863_n.jpg?oh=d6831999d41e5e44c63ec62e0ac379f8&oe=59F74C83',
+        ],
+        'channels' => ['web-push']
+    ];
+    $notify = new \Ajency\Comm\API\Notification();
+    $notify->send_notification($event,[26]);
 
 });
 

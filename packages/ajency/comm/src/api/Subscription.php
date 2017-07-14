@@ -171,12 +171,24 @@ class Subscription {
 
             DB::commit();
 
-            //TODO - add success string to lang file
-            return ['success' => true, 'message' => 'Subscription stored for user successfully'];
+            return ['success' => true, 'message' => 'Subscription stored for user successfully' , 'data' => ['emails' => $emails , 'mobiles' => $mobiles, 'webpushes' => $webpushes]];
+
         }catch(\Exception $e){
-            //TODO - ?
+
+            /*
+             * TODO - Roadmap
+             * Since our db schema takes care of unique key constraints
+             * Do we need to make this a setting since numbers get changed all the time?
+             * For Mobile we could be more flexible in the rules?
+             */
             DB::rollBack();
-            return ['success' => false, 'message' => $e];
+
+            $error = new Error();
+            $error->setUserId(Auth::id());
+            $error->setMessage($e->getMessage());
+            $error->setLevel(3);
+            //Also return a message incase we need to expose an API
+            return ['success' => false, 'message' => $e->getMessage(), 'data' => ['emails' => $emails , 'mobiles' => $mobiles, 'webpushes' => $webpushes]];
         }
     }
 
