@@ -1,10 +1,16 @@
 #Ajency Laravel Communication Package -
 Version = 1.0.0 - 15 July 2017
 
-Installation
-Create a folder /packages/ajency/comm
-Clone this repo in the folder
+//TODO - 1.0.1
+- Versioning - Done
+- Remove unwanted IDE files and composer files from within project
+- Reduce steps to install and configure package
+-- Add more flexibility around config using laravel end and config.php files
+-- Instead of adding the package to composer.json -> autoload -> psr-4, figure out how to add it to require and then run 
 
+Installation
+- Create a folder /packages/ajency/comm
+- Clone this repo in the folder
 
 In main project composer.json -> autoload -> psr-4
 - "Ajency\\Comm\\": "packages/ajency/comm/src",
@@ -99,3 +105,4 @@ Examples for sending notifications
     ];
     $notify = new \Ajency\Comm\API\Notification();
     $notify->send_notification($event,[10]);
+   
