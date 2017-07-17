@@ -1,37 +1,36 @@
-#Ajency Laravel Communication Package -
+#Ajency Laravel Communication Package - Version = 1.0.0 - 15 July 2017
 
-Installation
+Installation Create a folder /packages/ajency/comm Clone this repo in the folder
 
 In main project composer.json -> autoload -> psr-4
-- "Ajency\\Comm\\": "packages/ajency/comm/src",
-- "Ajency\\Comm\\Models\\": "packages/ajency/comm/src/models/",
-- "Ajency\\Comm\\API\\": "packages/ajency/comm/src/api/",
-- "Ajency\\Comm\\Providers\\": "packages/ajency/comm/src/providers/"
 
+"Ajency\\Comm\\": "packages/ajency/comm/src",
+"Ajency\\Comm\\Models\\": "packages/ajency/comm/src/models/",
+"Ajency\\Comm\\API\\": "packages/ajency/comm/src/api/",
+"Ajency\\Comm\\Providers\\": "packages/ajency/comm/src/providers/"
 In config/app.php
-- add 'Ajency\Comm\CommServiceProvider' under providers
 
+add 'Ajency\Comm\CommServiceProvider' under providers
 Copy over packages/ajency/comm/src/jobs/processEvents.php to app/Jobs/processEvents.php
 
 Run cmds
-- composer dump-autoload
-- php artisan vendor:publish
-- php artisan migrate
 
+composer dump-autoload
+php artisan vendor:publish
+php artisan migrate
 Set config
-- in config/aj-comm-channels.php - Set your channel providers
-- in config/aj-comm-events.php - Set your app events
 
+in config/aj-comm-channels.php - Set your channel providers
+in config/aj-comm-events.php - Set your app events
 Email Providers supported
-- Laravel
--- Set your provider settings from .env
 
+Laravel -- Set your provider settings from .env
 Mobile Providers supported
-- NONE
 
+NONE
 Webpush Providers supported
-- Clevertap
 
+Clevertap
 Examples for subscriptions
 
     $emails[] = 'antonio+3434@ajency.in';
