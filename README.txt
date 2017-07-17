@@ -6,7 +6,7 @@ In main project composer.json -> autoload -> psr-4
 - "Ajency\\Comm\\": "packages/ajency/comm/src",
 - "Ajency\\Comm\\Models\\": "packages/ajency/comm/src/models/",
 - "Ajency\\Comm\\API\\": "packages/ajency/comm/src/api/",
-- "Ajency\\Comm\\Providers\\": "src/providers/"
+- "Ajency\\Comm\\Providers\\": "packages/ajency/comm/src/providers/"
 
 In config/app.php
 - add 'Ajency\Comm\CommServiceProvider' under providers
