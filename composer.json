@@ -1,0 +1,17 @@
+{
+    "name": "ajency/comm",
+    "authors": [
+        {
+            "name": "ajency",
+            "email": "antonio@ajency.in"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ajency\\Comm\\": "src/",
+            "Ajency\\Comm\\Models\\": "src/models/",
+            "Ajency\\Comm\\API\\": "src/api/",
+            "Ajency\\Comm\\Providers\\": "src/providers/"
+        }
+    }
+}
