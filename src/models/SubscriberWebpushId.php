@@ -9,9 +9,8 @@ class Subscriber_Webpush_Id extends Model
     protected $table = 'aj_comm_subscriber_webpush_ids'; //can make this a config?
     public $incrementing = false;
 
-    function send($notification) {
-
-
+    public function send($notification)
+    {
         switch ($notification['provider']) {
             case 'pushcrew':
                 $pushcrew = new Pushcrew();
@@ -24,8 +23,5 @@ class Subscriber_Webpush_Id extends Model
                 //TODO
                 break;
         }
-
-
-
     }
 }

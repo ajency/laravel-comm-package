@@ -5,11 +5,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
-class Mandrill {
-
+class Mandrill
+{
     private $url = '';
 
-    function sendNotification($message,$identity) {
-
+    public function sendNotification($message, $identity)
+    {
     }
 }

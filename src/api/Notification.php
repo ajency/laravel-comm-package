@@ -8,17 +8,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ajency\Comm\Models\Subscriber_Email;
 
-class Notification {
-
-    public static function send_notification($event, $user_ids){
+class Notification
+{
+    public static function sendNotification($event, $user_ids)
+    {
         $provider = new Provider();
-        $jobs = $provider->getProvidersForEvent($event,$user_ids);
-        foreach($jobs as $job) {
+        $jobs = $provider->getProvidersForEvent($event, $user_ids);
+        foreach ($jobs as $job) {
             dispatch(new processEvents($job));
         }
     }
 
-    public static function channel_split($notification) {
+    public static function channelSplit($notification)
+    {
 
         /*
          * TODO - Roadmap
@@ -29,8 +31,8 @@ class Notification {
         switch ($notification['channel']) {
             case 'web-push':
                 $push = new Subscriber_Webpush_Id();
-                $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider',$notification['provider'])->where('user_id',$notification['recepients'][0] )->value('subscriber_id');
-                if($subscriber_id) {
+                $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider', $notification['provider'])->where('user_id', $notification['recepients'][0])->value('subscriber_id');
+                if ($subscriber_id) {
                     $notification['subscriber_id'] = $subscriber_id;
                     $push->send($notification);
                 } else {
@@ -45,8 +47,8 @@ class Notification {
             case 'email':
 
                 $email = new Subscriber_Email();
-                $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id',$notification['recepients'][0])->value('email');
-                if($email_id) {
+                $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id', $notification['recepients'][0])->value('email');
+                if ($email_id) {
                     $notification['email_id'] = $email_id;
                     $email->send($notification);
                 } else {

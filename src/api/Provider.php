@@ -4,7 +4,8 @@ namespace Ajency\Comm\API;
 use Ajency\Comm\Models\Error;
 use Illuminate\Support\Facades\Auth;
 
-class Provider {
+class Provider
+{
 
 
     /*
@@ -21,16 +22,16 @@ class Provider {
      *
      */
 
-    public function getProvidersForEvent($event, $recepients = [])
-    {
-        $provider_jobs = [];
-        $channels = config('aj-comm-channels');
-        $events = config('aj-comm-events');
-        foreach($channels as $channel => $settings) { //for each channel
-            if(!$event['channels'] || ($event['channels'] && in_array($channel,$event['channels']))) { //Keep only channels specified as required for the event
+       public function getProvidersForEvent($event, $recepients = [])
+       {
+           $provider_jobs = [];
+           $channels = config('aj-comm-channels');
+           $events = config('aj-comm-events');
+           foreach ($channels as $channel => $settings) { //for each channel
+            if (!$event['channels'] || ($event['channels'] && in_array($channel, $event['channels']))) { //Keep only channels specified as required for the event
 
-                if($settings['provider'] !== false) { //we check if a provider is not diabled
-                    if(isset($events[$event['event']][$settings['provider']])) { //we then check if the provider has the event defined
+                if ($settings['provider'] !== false) { //we check if a provider is not diabled
+                    if (isset($events[$event['event']][$settings['provider']])) { //we then check if the provider has the event defined
                         $data['channel'] = $channel;
                         $data['event'] = $event['event'];
                         $data['provider'] = $settings['provider'];
@@ -48,7 +49,7 @@ class Provider {
                     }
                 }
             }
-        }
-        return $provider_jobs;
-    }
+           }
+           return $provider_jobs;
+       }
 }

@@ -15,10 +15,10 @@ class CreateAjCommSubscriberEmails extends Migration
     {
         Schema::create('aj_comm_subscriber_emails', function (Blueprint $table) {
             $table->integer('user_id');
-            $table->string('email',255);
+            $table->string('email', 255);
             $table->boolean('is_primary');
             $table->timestamps();
-            $table->primary(['user_id', 'email'],'emails_pk');
+            $table->primary(['user_id', 'email'], 'emails_pk');
             $table->unique('email');
         });
     }

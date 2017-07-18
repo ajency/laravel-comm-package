@@ -5,11 +5,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
-class AmazonSes {
-
+class AmazonSes
+{
     private $url = '';
 
-    function sendNotification($message,$identity) {
-
+    public function sendNotification($message, $identity)
+    {
     }
 }

@@ -88,6 +88,4 @@ class Log extends Model
     {
         $this->attributes['response'] = $response;
     }
-
-
 }

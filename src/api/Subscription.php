@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use League\Flysystem\Exception;
 
-class Subscription {
-
+class Subscription
+{
     private $user_id;
     private $emails;
     private $mobile_nos;
@@ -108,20 +108,18 @@ class Subscription {
      * Push crew sending provider add
      * On succssful subscription in application send a push notification
      */
-    public function create_or_update_subscription() {
-
+    public function createOrUpdateSubscription()
+    {
         $webpushes = [];
         $emails = [];
         $mobiles = [];
 
-        if($this->webpush_ids !== null) {
-
+        if ($this->webpush_ids !== null) {
             $single = false;
-            if(is_array($this->webpush_ids)) {
-                foreach($this->webpush_ids as $k => $v) {
-                    if(is_array($v)) {
-                        if ($v['provider'] && $v['subscriber_id'])
-                        {
+            if (is_array($this->webpush_ids)) {
+                foreach ($this->webpush_ids as $k => $v) {
+                    if (is_array($v)) {
+                        if ($v['provider'] && $v['subscriber_id']) {
                             $email = [];
                             $email['provider'] = $v['provider'];
                             $email['subscriber_id'] = $v['subscriber_id'];
@@ -129,13 +127,12 @@ class Subscription {
                             $webpushes[] = $email;
                         }
                     } else {
-                        if ($this->webpush_ids['provider'] && $this->webpush_ids['subscriber_id'])
-                        {
+                        if ($this->webpush_ids['provider'] && $this->webpush_ids['subscriber_id']) {
                             $single = true;
                         }
                     }
                 }
-                if($single) {
+                if ($single) {
                     $this->webpush_ids['user_id'] = isset($this->webpush_ids['user_id']) ? $this->webpush_ids['user_id'] : $this->getUserId();
                     $webpushes[] = $this->webpush_ids;
                 }
@@ -145,36 +142,34 @@ class Subscription {
             }
         }
 
-        if($this->mobile_nos !== null) {
-            $mobiles = $this->get_insertable_array_mobile($this->mobile_nos);
+        if ($this->mobile_nos !== null) {
+            $mobiles = $this->getInsertableArrayMobile($this->mobile_nos);
         }
 
-        if($this->emails !== null) {
-            $emails = $this->get_insertable_array_email($this->emails);
+        if ($this->emails !== null) {
+            $emails = $this->getInsertableArrayEmail($this->emails);
         }
 
 
 
         DB::beginTransaction();
-        try{
-
-            if($emails) {
+        try {
+            if ($emails) {
                 Subscriber_Email::insert($emails);
             }
 
-            if($mobiles) {
+            if ($mobiles) {
                 Subscriber_Mobile_No::insert($mobiles);
             }
 
-            if($webpushes) {
+            if ($webpushes) {
                 Subscriber_Webpush_Id::insert($webpushes);
             }
 
             DB::commit();
 
             return ['success' => true, 'message' => 'Subscription stored for user successfully' , 'data' => ['emails' => $emails , 'mobiles' => $mobiles, 'webpushes' => $webpushes]];
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
 
             /*
              * TODO - Roadmap
@@ -195,13 +190,13 @@ class Subscription {
         }
     }
 
-    public function get_insertable_array_email($array, $key = 'email') {
-
+    public function getInsertableArrayEmail($array, $key = 'email')
+    {
         $emails = [];
         $single = false;
-        if(is_array($array)) {
-            foreach($array as $k => $v){
-                if(is_array($v)){
+        if (is_array($array)) {
+            foreach ($array as $k => $v) {
+                if (is_array($v)) {
                     if ($v[$key]) { //check for valid emails
                         $email = [];
                         $email['is_primary'] = isset($v['is_primary']) ? $v['is_primary'] : false;
@@ -215,7 +210,7 @@ class Subscription {
                     }
                 }
             }
-            if($single) {
+            if ($single) {
                 $array['user_id'] = $this->getUserId();
                 $emails[] = $array;
             }
@@ -230,13 +225,13 @@ class Subscription {
     }
 
 
-    public function get_insertable_array_mobile($array, $key = 'mobile_no') {
-
+    public function getInsertableArrayMobile($array, $key = 'mobile_no')
+    {
         $emails = [];
         $single = false;
-        if(is_array($array)) {
-            foreach($array as $k => $v){
-                if(is_array($v)){
+        if (is_array($array)) {
+            foreach ($array as $k => $v) {
+                if (is_array($v)) {
                     if ($v[$key]) { //check for valid emails
                         $email = [];
                         $email['is_primary'] = isset($v['is_primary']) ? $v['is_primary'] : false;
@@ -251,7 +246,7 @@ class Subscription {
                     }
                 }
             }
-            if($single) {
+            if ($single) {
                 $array['is_primary'] = isset($array['is_primary']) ? $array['is_primary'] : false;
                 $array['user_id'] = $this->getUserId();
                 $array['country_code'] = $this->getDefaultCountryCode();

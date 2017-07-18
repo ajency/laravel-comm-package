@@ -9,13 +9,11 @@ use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
-class Laravel {
-
-    function sendNotification($notification) {
-
+class Laravel
+{
+    public function sendNotification($notification)
+    {
         try {
-
-
             $log = new Log();
             $log->setApi('Laravel Mail'); //can get config from config() here - TODO
             $log->setRequest(serialize([]));
@@ -27,7 +25,6 @@ class Laravel {
             $log->setUserId(Auth::id());
             $log->setResponse(serialize([]));
             $log->save();
-
         } catch (\Exception $e) {
             $err = new Error();
             $err->setUserId(Auth::id());
@@ -35,6 +32,6 @@ class Laravel {
             $err->setMessage($e->getMessage());
             $err->setTag('laravel-mail');
             $err->save();
-         }
+        }
     }
 }

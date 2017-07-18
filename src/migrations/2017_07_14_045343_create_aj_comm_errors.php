@@ -18,7 +18,7 @@ class CreateAjCommErrors extends Migration
             $table->integer('user_id')->nullable();
             $table->text('message');
             $table->integer('level');
-            $table->string('tag',100);
+            $table->string('tag', 100);
             $table->timestamps();
         });
     }

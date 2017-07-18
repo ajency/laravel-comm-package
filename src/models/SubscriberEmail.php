@@ -5,7 +5,7 @@ use Ajency\Comm\Providers\Laravel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 
-class Subscriber_Email extends Model
+class SubscriberEmail extends Model
 {
     protected $table = 'aj_comm_subscriber_emails'; //can make this a config?
 
@@ -62,9 +62,8 @@ class Subscriber_Email extends Model
     }
 
 
-    function send($notification) {
-
-
+    public function send($notification)
+    {
         switch ($notification['provider']) {
             case 'laravel':
                 $laravel = new Laravel();
@@ -79,11 +78,5 @@ class Subscriber_Email extends Model
                 //TODO
                 break;
         }
-
-
-
     }
-
-
-
 }

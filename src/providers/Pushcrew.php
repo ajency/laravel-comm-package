@@ -8,11 +8,12 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
 
-class Pushcrew {
-
+class Pushcrew
+{
     private $url = 'https://pushcrew.com/api/v1/send/individual';
 
-    function sendNotification($notification) {
+    public function sendNotification($notification)
+    {
 
         //Log it - TODD
 
@@ -41,7 +42,6 @@ class Pushcrew {
             curl_close($ch);
             $log->setResponse(serialize($response));
             $log->save();
-
         } catch (\Exception $e) {
             $err = new Error();
             $err->setUserId(Auth::id());

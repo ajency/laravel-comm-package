@@ -8,12 +8,11 @@ class CommServiceProvider extends ServiceProvider
 {
     public function register()
     {
-
     }
 
     public function boot()
     {
-        $this->loadMigrationsFrom( __DIR__ . '/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/migrations');
 
         $this->publishes([
             __DIR__.'/config/aj-comm-channels.php' => config_path('aj-comm-channels.php'),
