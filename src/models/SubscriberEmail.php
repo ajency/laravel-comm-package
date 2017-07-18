@@ -3,38 +3,42 @@ namespace Ajency\Comm\Models;
 
 use Ajency\Comm\Providers\Laravel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class SubscriberEmail extends Model
 {
     protected $table = 'aj_comm_subscriber_emails'; //can make this a config?
 
-    private $user_id;
-    private $email;
-    private $is_primary;
+
+    protected $attributes = [
+        'ref_type' => 'User',
+        'is_primary' => 0,
+    ];
 
     /**
      * @return mixed
      */
-    public function getUserId()
+    public function getRefId()
     {
-        return $this->user_id;
+        return $this->attributes['ref_id'];
     }
 
     /**
-     * @param mixed $user_id
+     * @param mixed $ref_id
      */
-    public function setUserId($user_id)
+    public function setRefId($ref_id)
     {
-        $this->user_id = $user_id;
+        $this->attributes['ref_id'] = isset($ref_id) ? $ref_id: Auth::id();
     }
+
 
     /**
      * @return mixed
      */
     public function getEmail()
     {
-        return $this->email;
+        return $this->attributes['email'];
     }
 
     /**
@@ -42,7 +46,7 @@ class SubscriberEmail extends Model
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        $this->attributes['email'] = $email;
     }
 
     /**
@@ -50,7 +54,7 @@ class SubscriberEmail extends Model
      */
     public function getIsPrimary()
     {
-        return $this->is_primary;
+        return $this->attributes['is_primary'];
     }
 
     /**
@@ -58,11 +62,11 @@ class SubscriberEmail extends Model
      */
     public function setIsPrimary($is_primary)
     {
-        $this->is_primary = $is_primary;
+        $this->attributes['is_primary'] = $is_primary;
     }
 
 
-    public function send($notification)
+    public function sendEmails($notification)
     {
         switch ($notification['provider']) {
             case 'laravel':

@@ -1,12 +1,13 @@
 <?php
-namespace Ajency\Comm\API;
+namespace Ajency\Comm\Communication;
 
 use Ajency\Comm\Models\Error;
-use Ajency\Comm\Models\Subscriber_Webpush_Id;
+use Ajency\Comm\Models\SubscriberWebpushId;
 use App\Jobs\processEvents;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Ajency\Comm\Models\Subscriber_Email;
+use Ajency\Comm\Models\SubscriberEmail;
+use Ajency\Comm\Models\SubscriberMobileNo;
 
 
 /*
@@ -54,7 +55,7 @@ class Notification
                 $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider', $notification['provider'])->where('user_id', $notification['recepients'][0])->value('subscriber_id');
                 if ($subscriber_id) {
                     $notification['subscriber_id'] = $subscriber_id;
-                    $push->send($notification);
+                    $push->sendWebPushes($notification);
                 } else {
                     $err = new Error();
                     $err->setMessage('Recepient entitiy not found in aj_comm_subscriber_webpush_ids table for user ID : '. $notification['recepients'][0]);
@@ -70,7 +71,7 @@ class Notification
                 $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id', $notification['recepients'][0])->value('email');
                 if ($email_id) {
                     $notification['email_id'] = $email_id;
-                    $email->send($notification);
+                    $email->sendEmails($notification);
                 } else {
                     $err = new Error();
                     $err->setMessage('Recepient entitiy not found in aj_comm_subscriber_emails table for user ID : '. $notification['recepients'][0]);

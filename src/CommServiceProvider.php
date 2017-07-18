@@ -2,10 +2,9 @@
 
 namespace Ajency\Comm;
 
-use Ajency\Comm\API\Communication;
-use Ajency\Comm\Subscription\Subscription;
+use Ajency\Comm\Communication;
+use Ajency\Comm\Subscription;
 use Illuminate\Support\ServiceProvider;
-use Ajency\Comm\API\Notification;
 
 class CommServiceProvider extends ServiceProvider
 {
@@ -25,27 +24,22 @@ class CommServiceProvider extends ServiceProvider
 
     public static function sendNotification($event, $recepient_ids)
     {
-        $comm = new Communication();
+        $comm = new Communication\Communication();
         $comm->setEvent($event);
         $comm->setRecepientIds($recepient_ids);
-        $comm->beginCommunication();
+        return $comm->beginCommunication();
     }
 
-    public static function createSubscription($user_id, $communication_details) {
+    public static function createSubscription($communication_details) {
 
-        $sub = new Subscription();
-        $sub->setUserId($user_id);
-        $sub->setMobileNos($communication_details['mobile_nos']);
-        $sub->setWebpushIds($communication_details['web_push_ids']);
-        $sub->setEmails($communication_details['emails']);
-        $sub->createSubscription();
-
+        $sub = new Subscription\Subscription();
+        return $sub->createSubscription($communication_details);
     }
 
     public static function processNotifications($notification) {
 
-        $send = new Notification();
+        $send = new Communication\Notification();
         $send->setNotification($notification);
-        $send->processNotification();
+        return $send->processNotification();
     }
 }

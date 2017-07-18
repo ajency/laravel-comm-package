@@ -14,13 +14,13 @@ class CreateAjCommSubscriberMobileNos extends Migration
     public function up()
     {
         Schema::create('aj_comm_subscriber_mobile_nos', function (Blueprint $table) {
-            $table->integer('user_id');
+            $table->integer('ref_id')->nullable();
+            $table->string('ref_type',16)->nullable();
             $table->string('mobile_no', 25);
             $table->string('country_code', 3);
             $table->boolean('is_primary');
             $table->timestamps();
             $table->unique(['mobile_no','country_code'], 'mobiles_unq');
-            $table->primary(['user_id', 'country_code', 'mobile_no'], 'mobiles_pk');
         });
     }
 

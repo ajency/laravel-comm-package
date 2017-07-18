@@ -1,5 +1,5 @@
 <?php
-namespace Ajency\Comm\API;
+namespace Ajency\Comm\Providers;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Log;
