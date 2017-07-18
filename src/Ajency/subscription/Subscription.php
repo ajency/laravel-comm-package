@@ -1,5 +1,5 @@
 <?php
-namespace Ajency\Comm\API;
+namespace Ajency\Comm\Subscription;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Subscriber_Email;
@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use League\Flysystem\Exception;
 
+/*
+ * A base class that lets us define Subscription methods
+ * Subscription methods are any methods utilized to subscribe users to receive notifications
+ */
 class Subscription
 {
     private $user_id;
@@ -22,7 +26,7 @@ class Subscription
      */
     public function getDefaultCountryCode()
     {
-        return '+91';
+        return '+91'; //TODO - settings
     }
 
     /**
@@ -101,14 +105,11 @@ class Subscription
 
 
     /*
-     * TODO :
-     * Add subscription, make an API
-     * UI with socialite login
-     * Push crew integration on login
-     * Push crew sending provider add
-     * On succssful subscription in application send a push notification
+     * Main method to create a subscription
+     * Mehod has to be used along with class setter methods
+     * Refer Readme.md for input variables
      */
-    public function createOrUpdateSubscription()
+    public function createSubscription()
     {
         $webpushes = [];
         $emails = [];
@@ -190,76 +191,5 @@ class Subscription
         }
     }
 
-    public function getInsertableArrayEmail($array, $key = 'email')
-    {
-        $emails = [];
-        $single = false;
-        if (is_array($array)) {
-            foreach ($array as $k => $v) {
-                if (is_array($v)) {
-                    if ($v[$key]) { //check for valid emails
-                        $email = [];
-                        $email['is_primary'] = isset($v['is_primary']) ? $v['is_primary'] : false;
-                        $email[$key] = $v[$key];
-                        $email['user_id'] = $this->getUserId();
-                        $emails[] = $email;
-                    }
-                } else {
-                    if ($array[$key]) {
-                        $single = true;
-                    }
-                }
-            }
-            if ($single) {
-                $array['user_id'] = $this->getUserId();
-                $emails[] = $array;
-            }
-        } else {
-            $email = [];
-            $email['is_primary'] = false;
-            $email[$key] = $array;
-            $email['user_id'] = $this->getUserId();
-            $emails[] = $email;
-        }
-        return $emails;
-    }
 
-
-    public function getInsertableArrayMobile($array, $key = 'mobile_no')
-    {
-        $emails = [];
-        $single = false;
-        if (is_array($array)) {
-            foreach ($array as $k => $v) {
-                if (is_array($v)) {
-                    if ($v[$key]) { //check for valid emails
-                        $email = [];
-                        $email['is_primary'] = isset($v['is_primary']) ? $v['is_primary'] : false;
-                        $email[$key] = $v[$key];
-                        $email['user_id'] = $this->getUserId();
-                        $email['country_code'] = $this->getDefaultCountryCode();
-                        $emails[] = $email;
-                    }
-                } else {
-                    if ($array[$key]) {
-                        $single = true;
-                    }
-                }
-            }
-            if ($single) {
-                $array['is_primary'] = isset($array['is_primary']) ? $array['is_primary'] : false;
-                $array['user_id'] = $this->getUserId();
-                $array['country_code'] = $this->getDefaultCountryCode();
-                $emails[] = $array;
-            }
-        } else {
-            $email = [];
-            $email['is_primary'] = false;
-            $email[$key] = $array;
-            $email['user_id'] = $this->getUserId();
-            $email['country_code'] = $this->getDefaultCountryCode();
-            $emails[] = $email;
-        }
-        return $emails;
-    }
 }

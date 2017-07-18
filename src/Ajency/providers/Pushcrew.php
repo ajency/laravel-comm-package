@@ -1,5 +1,5 @@
 <?php
-namespace Ajency\Comm\Providers;
+namespace Ajency\Comm\API;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Log;
@@ -8,6 +8,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
 
+/*
+ * Pushcrew provider class
+ */
 class Pushcrew
 {
     private $url = 'https://pushcrew.com/api/v1/send/individual';

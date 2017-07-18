@@ -10,8 +10,8 @@
         "psr-4": {
             "Ajency\\Comm\\": "src/",
             "Ajency\\Comm\\Models\\": "src/models/",
-            "Ajency\\Comm\\API\\": "src/api/",
-            "Ajency\\Comm\\Providers\\": "src/providers/"
+            "Ajency\\Comm\\API\\": "src/Ajency/"
+
         }
     }
 }

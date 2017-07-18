@@ -1,5 +1,5 @@
 <?php
-namespace Ajency\Comm\Providers;
+namespace Ajency\Comm\API;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Log;
@@ -8,7 +8,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-
+/*
+ * Laravel provider class
+ */
 class Laravel
 {
     public function sendNotification($notification)

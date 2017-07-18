@@ -8,29 +8,49 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Ajency\Comm\Models\Subscriber_Email;
 
+
+/*
+ * A base class that lets us define Communication methods
+ * Communication methods are any methods utilized to send notification via queue process
+ */
 class Notification
 {
-    public static function sendNotification($event, $user_ids)
+    private $notification;
+
+    /**
+     * @return mixed
+     */
+    public function getNotification()
     {
-        $provider = new Provider();
-        $jobs = $provider->getProvidersForEvent($event, $user_ids);
-        foreach ($jobs as $job) {
-            dispatch(new processEvents($job));
-        }
+        return $this->notification;
     }
 
-    public static function channelSplit($notification)
+    /**
+     * @param mixed $notification
+     */
+    public function setNotification($notification)
     {
+        $this->notification = $notification;
+    }
 
+
+    /*
+     * A single API call instance
+     * Calls providers
+     */
+    public function processNotification()
+    {
         /*
          * TODO - Roadmap
          * For multiple users with a single message this will need rework
          * We have kept extendability open by making $notification['recepients'] an array
          * Currectly we have hardcoded $notification['recepients'][0] to work with on one item
          */
+        $notification = $this->notification;
+
         switch ($notification['channel']) {
             case 'web-push':
-                $push = new Subscriber_Webpush_Id();
+                $push = new SubscriberWebpushId();
                 $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider', $notification['provider'])->where('user_id', $notification['recepients'][0])->value('subscriber_id');
                 if ($subscriber_id) {
                     $notification['subscriber_id'] = $subscriber_id;
@@ -46,7 +66,7 @@ class Notification
                 break;
             case 'email':
 
-                $email = new Subscriber_Email();
+                $email = new SubscriberEmail();
                 $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id', $notification['recepients'][0])->value('email');
                 if ($email_id) {
                     $notification['email_id'] = $email_id;

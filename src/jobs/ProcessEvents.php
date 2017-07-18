@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use Ajency\Comm\API\Notification;
+use AjComm;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -33,6 +33,6 @@ class processEvents implements ShouldQueue
     public function handle()
     {
         $notification = $this->processEventsArray;
-        Notification::provider_split($notification);
+        AjComm::processNotifications($notification);
     }
 }
