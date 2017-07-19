@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SubscriberEmail extends Model
 {
-    protected $table = 'aj_comm_subscriber_emails'; //can make this a config?
+    protected $table = 'aj_comm_emails'; //can make this a config?
 
 
     protected $attributes = [

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SubscriberWebpushId extends Model
 {
-    protected $table = 'aj_comm_subscriber_webpush_ids'; //can make this a config? - TODO
+    protected $table = 'aj_comm_webpush_ids'; //can make this a config? - TODO
 
     protected $attributes = [
         'ref_type' => 'User'

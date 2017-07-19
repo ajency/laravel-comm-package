@@ -5,9 +5,7 @@ use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Subscriber_Webpush_Id;
 use App\Jobs\processEvents;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Ajency\Comm\Models\Subscriber_Email;
-use Mockery\CountValidator\Exception;
 
 
 /*
@@ -54,7 +52,7 @@ class Communication
 
 
     /*
-     * Returns 1 if queued successfully
+     * Returns 1 if all queued successfully
      */
     public function beginCommunication()
     {

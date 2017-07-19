@@ -13,7 +13,7 @@ class CreateAjCommSubscriberMobileNos extends Migration
      */
     public function up()
     {
-        Schema::create('aj_comm_subscriber_mobile_nos', function (Blueprint $table) {
+        Schema::create('aj_comm_mobile_nos', function (Blueprint $table) {
             $table->integer('ref_id')->nullable();
             $table->string('ref_type',16)->nullable();
             $table->string('mobile_no', 25);
