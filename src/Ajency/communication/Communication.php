@@ -41,7 +41,6 @@ class Communication
 
         try {
             $jobs = $this->getProvidersForEvent($this->getNotifications());
-
             foreach ($jobs as $job) {
                 dispatch(new ProcessEvents($job));
             }
@@ -72,7 +71,7 @@ class Communication
                         $data['event'] = $notifications->getEvent();
                         $data['provider'] = $settings['provider'];
                         $data['template_id'] = $events[$notifications->getEvent()][$settings['provider']];
-                        $data['provider_params'] = isset($provider_params) ? $provider_params : null;
+                        $data['provider_params'] = $notifications->getProviderParams();
                         $data['recepients'] = $notifications->getRecepientIds();
                         $provider_jobs[] = $data;
                     } else { //incase it does not we should log this as a warning to aid the developer

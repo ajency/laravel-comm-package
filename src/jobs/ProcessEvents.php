@@ -14,15 +14,15 @@ class ProcessEvents implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
-    protected $job;
+    protected $job_to_process;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($job)
+    public function __construct($job_to_process)
     {
-        $this->job = $job;
+        $this->job_to_process = $job_to_process;
     }
 
     /**
@@ -32,6 +32,6 @@ class ProcessEvents implements ShouldQueue
      */
     public function handle()
     {
-        AjComm::processNotificationJob($this->job);
+        AjComm::processNotificationJob($this->job_to_process);
     }
 }

@@ -27,7 +27,7 @@ class Notification
      */
     public function getChannels()
     {
-        return $this->channels;
+        return is_array($this->channels) ? $this->channels : [$this->channels];
     }
 
     /**
@@ -75,7 +75,7 @@ class Notification
      */
     public function getRecepientIds()
     {
-        return $this->recepient_ids;
+        return is_array($this->recepient_ids) ? $this->recepient_ids : [$this->recepient_ids];
     }
 
     /**

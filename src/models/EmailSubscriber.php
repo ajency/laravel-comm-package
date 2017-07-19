@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
-class SubscriberEmail extends Model
+class EmailSubscriber extends Model
 {
     protected $table = 'aj_comm_emails'; //can make this a config?
 
@@ -29,7 +29,7 @@ class SubscriberEmail extends Model
      */
     public function setRefId($ref_id)
     {
-        $this->attributes['ref_id'] = isset($ref_id) ? $ref_id: Auth::id();
+        $this->attributes['ref_id'] = $ref_id;
     }
 
 
@@ -65,6 +65,15 @@ class SubscriberEmail extends Model
         $this->attributes['is_primary'] = $is_primary;
     }
 
+
+    public function save(array $options = array())
+    {
+        if(!$this->ref_id)
+        {
+            $this->ref_id = Auth::id();
+        }
+        parent::save($options);
+    }
 
     public function sendEmails($notification)
     {

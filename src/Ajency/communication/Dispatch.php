@@ -52,37 +52,36 @@ class Dispatch
         switch ($notification['channel']) {
             case 'web-push':
                 $push = new WebpushSubscriber();
-                $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider', $notification['provider'])->where('user_id', $notification['recepients'][0])->value('subscriber_id');
+                $subscriber_id = DB::table('aj_comm_webpush_ids')->where('provider', $notification['provider'])->where('ref_id', $notification['recepients'][0])->value('subscriber_id');
                 if ($subscriber_id) {
                     $notification['subscriber_id'] = $subscriber_id;
                     $push->sendWebPushes($notification);
                 } else {
                     $err = new Error();
-                    $err->setMessage('Recepient entitiy not found in aj_comm_subscriber_webpush_ids table for user ID : '. $notification['recepients'][0]);
+                    $err->setMessage('Recepient entitiy not found in aj_comm_webpush_ids table for user ID : '. $notification['recepients'][0]);
                     $err->setLevel(2);
                     $err->setTag('not-found-sub-id');
                     $err->setUserId(Auth::id());
                     $err->save();
                 }
                 break;
-            case 'email':
 
+            case 'email':
                 $email = new EmailSubscriber();
-                $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id', $notification['recepients'][0])->value('email');
+                $email_id = DB::table('aj_comm_emails')->where('ref_id', $notification['recepients'][0])->value('email');
                 if ($email_id) {
                     $notification['email_id'] = $email_id;
                     $email->sendEmails($notification);
                 } else {
                     $err = new Error();
-                    $err->setMessage('Recepient entitiy not found in aj_comm_subscriber_emails table for user ID : '. $notification['recepients'][0]);
+                    $err->setMessage('Recepient entitiy not found in aj_comm_emails table for user ID : '. $notification['recepients'][0]);
                     $err->setLevel(2);
                     $err->setTag('not-found-email');
                     $err->setUserId(Auth::id());
                     $err->save();
                 }
-
-
                 break;
+
             case 'mobile':
 
                 //TODO
