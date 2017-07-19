@@ -2,9 +2,6 @@
 namespace Ajency\Comm\Subscription;
 
 use Ajency\Comm\Models\Error;
-use Ajency\Comm\Models\SubscriberEmail;
-use Ajency\Comm\Models\SubscriberMobileNo;
-use Ajency\Comm\Models\SubscriberWebpushId;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use League\Flysystem\Exception;
@@ -42,7 +39,6 @@ class Subscription
              * For Mobile we could be more flexible in the rules?
              */
             DB::rollBack();
-
             $error = new Error();
             $error->setUserId(Auth::id());
             $error->setMessage($e->getMessage());

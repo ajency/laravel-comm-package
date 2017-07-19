@@ -31,6 +31,6 @@ class CreateAjCommSubscriberMobileNos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('aj_comm_subscriber_mobile_nos');
+        Schema::dropIfExists('aj_comm_mobile_nos');
     }
 }

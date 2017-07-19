@@ -5,6 +5,7 @@ namespace Ajency\Comm;
 use Ajency\Comm\Communication;
 use Ajency\Comm\Subscription;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class CommServiceProvider extends ServiceProvider
 {
@@ -14,6 +15,7 @@ class CommServiceProvider extends ServiceProvider
 
     public function boot()
     {
+       # Schema::defaultStringLength(191);
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
 
         $this->publishes([
@@ -22,11 +24,10 @@ class CommServiceProvider extends ServiceProvider
         ]);
     }
 
-    public static function sendNotification($event, $recepient_ids)
+    public static function sendNotification(Communication\Notification $notification)
     {
         $comm = new Communication\Communication();
-        $comm->setEvent($event);
-        $comm->setRecepientIds($recepient_ids);
+        $comm->setNotifications($notification);
         return $comm->beginCommunication();
     }
 
@@ -36,10 +37,10 @@ class CommServiceProvider extends ServiceProvider
         return $sub->createSubscription($communication_details);
     }
 
-    public static function processNotifications($notification) {
+    public static function processNotificationJob($notificationJob) {
 
-        $send = new Communication\Notification();
-        $send->setNotification($notification);
+        $send = new Communication\Dispatch();
+        $send->setNotificationJob($notificationJob);
         return $send->processNotification();
     }
 }

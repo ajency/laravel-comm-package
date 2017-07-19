@@ -2,12 +2,10 @@
 namespace Ajency\Comm\Communication;
 
 use Ajency\Comm\Models\Error;
-use Ajency\Comm\Models\SubscriberWebpushId;
+use Ajency\Comm\Models\Subscriber_Webpush_Id;
 use App\Jobs\processEvents;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Ajency\Comm\Models\SubscriberEmail;
-use Ajency\Comm\Models\SubscriberMobileNo;
+use Ajency\Comm\Models\Subscriber_Email;
 
 
 /*
@@ -16,78 +14,75 @@ use Ajency\Comm\Models\SubscriberMobileNo;
  */
 class Notification
 {
-    private $notification;
+    private $event;
+
+    private $recepient_ids;
+
+    private $provider_params;
+
+    private $channels;
 
     /**
      * @return mixed
      */
-    public function getNotification()
+    public function getChannels()
     {
-        return $this->notification;
+        return $this->channels;
     }
 
     /**
-     * @param mixed $notification
+     * @param mixed $channels
      */
-    public function setNotification($notification)
+    public function setChannels($channels)
     {
-        $this->notification = $notification;
+        $this->channels = $channels;
     }
 
-
-    /*
-     * A single API call instance
-     * Calls providers
+    /**
+     * @return mixed
      */
-    public function processNotification()
+    public function getProviderParams()
     {
-        /*
-         * TODO - Roadmap
-         * For multiple users with a single message this will need rework
-         * We have kept extendability open by making $notification['recepients'] an array
-         * Currectly we have hardcoded $notification['recepients'][0] to work with on one item
-         */
-        $notification = $this->notification;
+        return $this->provider_params;
+    }
 
-        switch ($notification['channel']) {
-            case 'web-push':
-                $push = new SubscriberWebpushId();
-                $subscriber_id = DB::table('aj_comm_subscriber_webpush_ids')->where('provider', $notification['provider'])->where('user_id', $notification['recepients'][0])->value('subscriber_id');
-                if ($subscriber_id) {
-                    $notification['subscriber_id'] = $subscriber_id;
-                    $push->sendWebPushes($notification);
-                } else {
-                    $err = new Error();
-                    $err->setMessage('Recepient entitiy not found in aj_comm_subscriber_webpush_ids table for user ID : '. $notification['recepients'][0]);
-                    $err->setLevel(2);
-                    $err->setTag('not-found-sub-id');
-                    $err->setUserId(Auth::id());
-                    $err->save();
-                }
-                break;
-            case 'email':
+    /**
+     * @param mixed $template_vars
+     */
+    public function setProviderParams($provider_params)
+    {
+        $this->provider_params = $provider_params;
+    }
 
-                $email = new SubscriberEmail();
-                $email_id = DB::table('aj_comm_subscriber_emails')->where('user_id', $notification['recepients'][0])->value('email');
-                if ($email_id) {
-                    $notification['email_id'] = $email_id;
-                    $email->sendEmails($notification);
-                } else {
-                    $err = new Error();
-                    $err->setMessage('Recepient entitiy not found in aj_comm_subscriber_emails table for user ID : '. $notification['recepients'][0]);
-                    $err->setLevel(2);
-                    $err->setTag('not-found-email');
-                    $err->setUserId(Auth::id());
-                    $err->save();
-                }
+    /**
+     * @return mixed
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
 
+    /**
+     * @param mixed $event
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+    }
 
-                break;
-            case 'mobile':
+    /**
+     * @return mixed
+     */
+    public function getRecepientIds()
+    {
+        return $this->recepient_ids;
+    }
 
-                //TODO
-
-                break;
-        }
+    /**
+     * @param mixed $recepient_ids
+     */
+    public function setRecepientIds($recepient_ids)
+    {
+        $this->recepient_ids = $recepient_ids;
     }
 }

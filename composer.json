@@ -15,5 +15,10 @@
             "Ajency\\Comm\\Subscription\\": "src/Ajency/Subscription/"
 
         }
+    },
+   "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
     }
 }

@@ -19,7 +19,7 @@ class CreateAjCommSubscriberEmails extends Migration
             $table->string('email', 255);
             $table->boolean('is_primary');
             $table->timestamps();
-            $table->unique('email');
+            $table->unique('email','email_unq');
         });
     }
 
@@ -30,6 +30,6 @@ class CreateAjCommSubscriberEmails extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('aj_comm_subscriber_emails');
+        Schema::dropIfExists('aj_comm_emails');
     }
 }

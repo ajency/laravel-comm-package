@@ -9,20 +9,20 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class processEvents implements ShouldQueue
+class ProcessEvents implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
-    protected $processEventsArray;
+    protected $job;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($processEventsArray)
+    public function __construct($job)
     {
-        $this->processEventsArray = $processEventsArray;
+        $this->job = $job;
     }
 
     /**
@@ -32,7 +32,6 @@ class processEvents implements ShouldQueue
      */
     public function handle()
     {
-        $notification = $this->processEventsArray;
-        AjComm::processNotifications($notification);
+        AjComm::processNotificationJob($this->job);
     }
 }

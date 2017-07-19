@@ -3,7 +3,7 @@ namespace Ajency\Comm\Communication;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Subscriber_Webpush_Id;
-use App\Jobs\processEvents;
+use App\Jobs\ProcessEvents;
 use Illuminate\Support\Facades\Auth;
 use Ajency\Comm\Models\Subscriber_Email;
 
@@ -14,42 +14,23 @@ use Ajency\Comm\Models\Subscriber_Email;
  */
 class Communication
 {
-    private $event;
-
-    private $recepient_ids;
+    private $notifications;
 
     /**
      * @return mixed
      */
-    public function getEvent()
+    public function getNotifications()
     {
-        return $this->event;
+        return $this->notifications;
     }
 
     /**
-     * @param mixed $event
+     * @param mixed $notification
      */
-    public function setEvent($event)
+    public function setNotifications(Notification $notifications)
     {
-        $this->event = $event;
+        $this->notifications = $notifications;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getRecepientIds()
-    {
-        return $this->recepient_ids;
-    }
-
-    /**
-     * @param mixed $recepient_ids
-     */
-    public function setRecepientIds($recepient_ids)
-    {
-        $this->recepient_ids = $recepient_ids;
-    }
-
 
     /*
      * Returns 1 if all queued successfully
@@ -57,8 +38,10 @@ class Communication
     public function beginCommunication()
     {
 
+
         try {
-            $jobs = $this->getProvidersForEvent($this->event, $this->recepient_ids);
+            $jobs = $this->getProvidersForEvent($this->getNotifications());
+
             foreach ($jobs as $job) {
                 dispatch(new ProcessEvents($job));
             }
@@ -72,27 +55,30 @@ class Communication
     }
 
 
-    public function getProvidersForEvent($event, $recepients = [])
+    /*
+     * Return an array of jobs to be processed
+     */
+    public function getProvidersForEvent(Notification $notifications)
     {
         $provider_jobs = [];
         $channels = config('aj-comm-channels');
         $events = config('aj-comm-events');
         foreach ($channels as $channel => $settings) { //for each channel
-            if (!$event['channels'] || ($event['channels'] && in_array($channel, $event['channels']))) { //Keep only channels specified as required for the event
+            if (!$notifications->getChannels() || ($notifications->getChannels() && in_array($channel, $notifications->getChannels()))) { //Keep only channels specified as required for the event
 
                 if ($settings['provider'] !== false) { //we check if a provider is not diabled
-                    if (isset($events[$event['event']][$settings['provider']])) { //we then check if the provider has the event defined
+                    if (isset($events[$notifications->getEvent()][$settings['provider']])) { //we then check if the provider has the event defined
                         $data['channel'] = $channel;
-                        $data['event'] = $event['event'];
+                        $data['event'] = $notifications->getEvent();
                         $data['provider'] = $settings['provider'];
-                        $data['template_id'] = $events[$event['event']][$settings['provider']];
-                        $data['provider_params'] = isset($event['provider_params']) ? $event['provider_params'] : null;
-                        $data['recepients'] = $recepients;
+                        $data['template_id'] = $events[$notifications->getEvent()][$settings['provider']];
+                        $data['provider_params'] = isset($provider_params) ? $provider_params : null;
+                        $data['recepients'] = $notifications->getRecepientIds();
                         $provider_jobs[] = $data;
                     } else { //incase it does not we should log this as a warning to aid the developer
                         $error = new Error();
                         $error->setUserId(Auth::id());
-                        $error->setMessage($settings['provider'] . 'provider does not have template defined for event ' . $event['event']);
+                        $error->setMessage($settings['provider'] . 'provider does not have template defined for event ' . $notifications->getEvent());
                         $error->setLevel(2);
                         $error->setTag('template');
                         $error->save();

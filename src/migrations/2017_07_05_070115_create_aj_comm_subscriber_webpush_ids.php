@@ -30,6 +30,6 @@ class CreateAjCommSubscriberWebpushIds extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('aj_comm_subscriber_webpush_ids');
+        Schema::dropIfExists('aj_comm_webpush_ids');
     }
 }
