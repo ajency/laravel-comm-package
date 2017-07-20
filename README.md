@@ -1,39 +1,38 @@
-#Ajency Laravel Communication Package#
+# Ajency Laravel Communication Package
 
-Version=1.0.2
-Updated=20 July 2017
+- Version=1.0.2
+- Updated=20 July 2017
 
-##Installation
+## Installation
 
 1. Create a folder /packages/ajency/comm Clone this repo in the folder in your Laravel project
 
 2. In main project composer.json -> autoload -> psr-4 add
-"Ajency\\Comm\\": "packages/ajency/comm/src"
+- "Ajency\\Comm\\": "packages/ajency/comm/src"
 
 3. In config/app.php
-add 'Ajency\Comm\CommServiceProvider' under providers
-add 'AjComm' => 'Ajency\Comm\CommServiceProvider' under aliases
+- add 'Ajency\Comm\CommServiceProvider' under providers
+- add 'AjComm' => 'Ajency\Comm\CommServiceProvider' under aliases
 
 4. Copy over packages/ajency/comm/src/jobs/processEvents.php to app/Jobs/processEvents.php
 
 5. Run commands
-composer dump-autoload
-php artisan vendor:publish
+- composer dump-autoload
+- php artisan vendor:publish
 
 6. Run Migrations
-php artisan migrate
-*Caution : Laravel 5.4 has an issue with migrations regarding String length, please check this before running a migration on this version*
+- php artisan migrate
+- *Caution : Laravel 5.4 has an issue with migrations regarding String length, please check this before running a migration on this version*
 
 7. Configure the package
-in config/aj-comm-channels.php - Set your channel providers
-in config/aj-comm-events.php - Set your app events
+- in config/aj-comm-channels.php - Set your channel providers
+- in config/aj-comm-events.php - Set your app events
 
-:::Supported providers
-1. Laravel Email
-    * Send email via SES, Mailgun or SMTP server
+## Supported providers
+1. Laravel Email - Send email via SES, Mailgun or SMTP server
 2. Pushcrew for push notifications
 
-:::Examples
+## Examples
 
 1. Subscribe
     $email = new \Ajency\Comm\Models\EmailSubscriber();
@@ -63,8 +62,7 @@ in config/aj-comm-events.php - Set your app events
     $notify->setChannels('web-push');
     dd(AjComm::sendNotification($notify));
 
-
-:::Changelog
+## Changelog
 * 1.0.2
 ** Exposed functions as package APIs
 ** Exposed objects to create subscriber and notification objects
