@@ -3,9 +3,12 @@ namespace Ajency\Comm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/*
+ * Class exposed to allow developer to create an Mobile Subscriber and pass to add subscription method
+ */
 class MobileSubscriber extends Model
 {
-    protected $table = 'aj_comm_mobile_nos'; //can make this a config?
+    protected $table = 'aj_comm_mobile_nos';
 
     public function save(array $options = array())
     {

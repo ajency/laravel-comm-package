@@ -1,24 +1,42 @@
 <?php
 namespace Ajency\Comm\Communication;
 
-use Ajency\Comm\Models\Error;
+
 use Ajency\Comm\Models\Subscriber_Webpush_Id;
 use App\Jobs\processEvents;
-use Illuminate\Support\Facades\Auth;
+
 use Ajency\Comm\Models\Subscriber_Email;
 
 /*
- * A base class that lets us define Communication methods
- * Communication methods are any methods utilized to send notification via queue process
+ * A class which is exposed to package user to create a Notification object, this notification object is passed along with the communication  call
  */
 class Notification
 {
+    /**
+     * A variable indicating what is th communication event that has occured
+     *
+     * @var string
+     */
     private $event;
 
-    private $recepient_ids;
-
+    /**
+     * A list of recepient user ids for this notification
+     *
+     * @var string
+     */
+    private $recipient_ids;
+    /**
+     * An associative array of data required by the provider to send out communication
+     *
+     * @var string
+     */
     private $provider_params;
 
+    /**
+     * A list of channels to send this notification on eg. email, mobile, web-push
+     *
+     * @var string
+     */
     private $channels;
 
     /**
@@ -46,7 +64,7 @@ class Notification
     }
 
     /**
-     * @param mixed $template_vars
+     * @param $provider_params
      */
     public function setProviderParams($provider_params)
     {
@@ -72,16 +90,16 @@ class Notification
     /**
      * @return mixed
      */
-    public function getRecepientIds()
+    public function getRecipientIds()
     {
-        return is_array($this->recepient_ids) ? $this->recepient_ids : [$this->recepient_ids];
+        return is_array($this->recipient_ids) ? $this->recipient_ids : [$this->recipient_ids];
     }
 
     /**
-     * @param mixed $recepient_ids
+     * @param mixed $recipient_ids
      */
-    public function setRecepientIds($recepient_ids)
+    public function setRecipientIds($recipient_ids)
     {
-        $this->recepient_ids = $recepient_ids;
+        $this->recipient_ids = $recipient_ids;
     }
 }

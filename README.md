@@ -58,7 +58,7 @@ Communication Examples
 ```php
     $notify = new \Ajency\Comm\Communication\Notification();
     $notify->setEvent('welcome');
-    $notify->setRecepientIds(17);
+    $notify->setRecipientIds(17);
     $notify->setProviderParams([
         'title' => 'Hi, Thank you for registering with Ajency push',
         'message' => 'Click here to know more about Push notification, edit your push settings using the gear icon above',

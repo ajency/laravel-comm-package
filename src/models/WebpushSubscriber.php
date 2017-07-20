@@ -5,6 +5,10 @@ use Ajency\Comm\Providers\Pushcrew;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
+
+/*
+ * Class exposed to allow developer to create an Web push Subscriber and pass to add subscription method
+ */
 class WebpushSubscriber extends Model
 {
     protected $table = 'aj_comm_webpush_ids'; //can make this a config? - TODO
@@ -39,6 +43,9 @@ class WebpushSubscriber extends Model
         parent::save($options);
     }
 
+    /*
+     * Method to split between providers
+     */
     public function sendWebPushes($notification)
     {
         switch ($notification['provider']) {

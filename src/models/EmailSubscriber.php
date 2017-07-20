@@ -4,8 +4,11 @@ namespace Ajency\Comm\Models;
 use Ajency\Comm\Providers\Laravel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 
+
+/*
+ * Class exposed to allow developer to create an Email Subscriber and pass to add subscription method
+ */
 class EmailSubscriber extends Model
 {
     protected $table = 'aj_comm_emails'; //can make this a config?
@@ -73,7 +76,10 @@ class EmailSubscriber extends Model
         }
         parent::save($options);
     }
-
+    
+    /*
+     * Method to split between providers
+     */
     public function sendEmails($notification)
     {
         switch ($notification['provider']) {

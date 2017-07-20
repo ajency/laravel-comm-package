@@ -2,7 +2,7 @@
 namespace Ajency\Comm\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Mail;
+
 
 class Error extends Model
 {
@@ -65,7 +65,8 @@ class Error extends Model
     }
 
     /**
-     * @param mixed $message
+     * @param $tag
+     * @internal param mixed $message
      */
     public function setTag($tag)
     {

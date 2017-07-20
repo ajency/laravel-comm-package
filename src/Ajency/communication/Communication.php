@@ -9,6 +9,7 @@ use Ajency\Comm\Models\Subscriber_Email;
 
 /*
  * A base class that lets us define Communication methods
+ *
  * Communication methods are any methods utilized to send notification via queue process
  */
 class Communication
@@ -24,7 +25,8 @@ class Communication
     }
 
     /**
-     * @param mixed $notification
+     * @param Notification $notifications
+     * @internal param mixed $notification
      */
     public function setNotifications(Notification $notifications)
     {
@@ -32,12 +34,14 @@ class Communication
     }
 
     /*
-     * Returns 1 if all queued successfully
+     * Function that queues notifications by converting an event into notification job
+     *
+     * @return 1
      */
     public function beginCommunication()
     {
         try {
-            $jobs = $this->getProvidersForEvent($this->getNotifications());
+            $jobs = $this->getIndividualJobs($this->getNotifications());
             foreach ($jobs as $job) {
                 dispatch(new ProcessEvents($job));
             }
@@ -51,9 +55,14 @@ class Communication
 
 
     /*
+     * Magic method that splits jobs based on channels
      * Return an array of jobs to be processed
+     *
+     * @param Notification $notifications
+     *
+     * @return array
      */
-    public function getProvidersForEvent(Notification $notifications)
+    public function getIndividualJobs(Notification $notifications)
     {
         $provider_jobs = [];
         $channels = config('aj-comm-channels');
@@ -68,7 +77,7 @@ class Communication
                         $data['provider'] = $settings['provider'];
                         $data['template_id'] = $events[$notifications->getEvent()][$settings['provider']];
                         $data['provider_params'] = $notifications->getProviderParams();
-                        $data['recepients'] = $notifications->getRecepientIds();
+                        $data['recipients'] = $notifications->getRecipientIds();
                         $provider_jobs[] = $data;
                     } else { //incase it does not we should log this as a warning to aid the developer
                         $error = new Error();

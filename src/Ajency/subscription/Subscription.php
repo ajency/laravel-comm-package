@@ -4,20 +4,22 @@ namespace Ajency\Comm\Subscription;
 use Ajency\Comm\Models\Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use League\Flysystem\Exception;
+
 
 /*
  * A base class that lets us define Subscription methods
+ *
  * Subscription methods are any methods utilized to subscribe users to receive notifications
  */
 class Subscription
 {
-    private $communication_details;
-
     /*
      * Main method to create a subscription
-     * Mehod has to be used along with class setter methods
-     * Refer Readme.md for input variables
+     * Handles transactions
+     *
+     * @params array $communication_details
+     *
+     * @return array
      */
     public function createSubscription($communication_details)
     {

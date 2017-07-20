@@ -45,7 +45,7 @@ class CommTest extends \Tests\TestCase
                 'url' => 'http://127.0.0.1:8000/benefits',
                 'image_url' => 'https://scontent.fdel1-1.fna.fbcdn.net/v/t1.0-1/c28.28.345.345/s50x50/485505_10151614542753486_1618802863_n.jpg?oh=d6831999d41e5e44c63ec62e0ac379f8&oe=59F74C83',
             ]);
-        $notify->setRecepientIds([10]);
+        $notify->setRecipientIds([10]);
         $notify->setChannels(['web-push']);
         AjAuth::sendNotification($notify);
     }

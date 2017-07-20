@@ -5,17 +5,17 @@ namespace Ajency\Comm;
 use Ajency\Comm\Communication;
 use Ajency\Comm\Subscription;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
 
 class CommServiceProvider extends ServiceProvider
 {
+
+
     public function register()
     {
     }
 
     public function boot()
     {
-        # Schema::defaultStringLength(191);
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
 
         $this->publishes([
