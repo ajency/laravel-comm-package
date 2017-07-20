@@ -15,7 +15,7 @@ class CreateAjCommSubscriberWebpushIds extends Migration
     {
         Schema::create('aj_comm_webpush_ids', function (Blueprint $table) {
             $table->integer('ref_id')->nullable();
-            $table->string('ref_type',16)->nullable();
+            $table->string('ref_type', 16)->nullable();
             $table->string('provider', 16);
             $table->string('subscriber_id', 255);
             $table->timestamps();

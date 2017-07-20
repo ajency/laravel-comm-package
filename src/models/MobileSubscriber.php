@@ -9,11 +9,9 @@ class MobileSubscriber extends Model
 
     public function save(array $options = array())
     {
-        if(!$this->ref_id)
-        {
+        if (!$this->ref_id) {
             $this->ref_id = Auth::id();
         }
         parent::save($options);
     }
-
 }

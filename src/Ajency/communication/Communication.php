@@ -7,7 +7,6 @@ use App\Jobs\ProcessEvents;
 use Illuminate\Support\Facades\Auth;
 use Ajency\Comm\Models\Subscriber_Email;
 
-
 /*
  * A base class that lets us define Communication methods
  * Communication methods are any methods utilized to send notification via queue process
@@ -37,8 +36,6 @@ class Communication
      */
     public function beginCommunication()
     {
-
-
         try {
             $jobs = $this->getProvidersForEvent($this->getNotifications());
             foreach ($jobs as $job) {
@@ -50,7 +47,6 @@ class Communication
             //
             throw $e;
         }
-
     }
 
 

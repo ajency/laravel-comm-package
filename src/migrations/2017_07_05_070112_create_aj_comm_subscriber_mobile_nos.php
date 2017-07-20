@@ -15,7 +15,7 @@ class CreateAjCommSubscriberMobileNos extends Migration
     {
         Schema::create('aj_comm_mobile_nos', function (Blueprint $table) {
             $table->integer('ref_id')->nullable();
-            $table->string('ref_type',16)->nullable();
+            $table->string('ref_type', 16)->nullable();
             $table->string('mobile_no', 25);
             $table->string('country_code', 3);
             $table->boolean('is_primary');

@@ -21,11 +21,9 @@ class Subscription
      */
     public function createSubscription($communication_details)
     {
-
-
         DB::beginTransaction();
         try {
-            foreach($communication_details as $communication_detail) {
+            foreach ($communication_details as $communication_detail) {
                 $communication_detail->save();
             }
             DB::commit();

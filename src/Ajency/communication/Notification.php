@@ -7,7 +7,6 @@ use App\Jobs\processEvents;
 use Illuminate\Support\Facades\Auth;
 use Ajency\Comm\Models\Subscriber_Email;
 
-
 /*
  * A base class that lets us define Communication methods
  * Communication methods are any methods utilized to send notification via queue process

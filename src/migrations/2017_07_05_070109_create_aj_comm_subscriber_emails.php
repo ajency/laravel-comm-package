@@ -15,11 +15,11 @@ class CreateAjCommSubscriberEmails extends Migration
     {
         Schema::create('aj_comm_emails', function (Blueprint $table) {
             $table->integer('ref_id')->nullable();
-            $table->string('ref_type',16)->nullable();
+            $table->string('ref_type', 16)->nullable();
             $table->string('email', 255);
             $table->boolean('is_primary');
             $table->timestamps();
-            $table->unique('email','email_unq');
+            $table->unique('email', 'email_unq');
         });
     }
 

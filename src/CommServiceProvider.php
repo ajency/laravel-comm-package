@@ -15,7 +15,7 @@ class CommServiceProvider extends ServiceProvider
 
     public function boot()
     {
-       # Schema::defaultStringLength(191);
+        # Schema::defaultStringLength(191);
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
 
         $this->publishes([
@@ -31,14 +31,14 @@ class CommServiceProvider extends ServiceProvider
         return $comm->beginCommunication();
     }
 
-    public static function createSubscription($communication_details) {
-
+    public static function createSubscription($communication_details)
+    {
         $sub = new Subscription\Subscription();
         return $sub->createSubscription($communication_details);
     }
 
-    public static function processNotificationJob($notificationJob) {
-
+    public static function processNotificationJob($notificationJob)
+    {
         $send = new Communication\Dispatch();
         $send->setNotificationJob($notificationJob);
         return $send->processNotification();

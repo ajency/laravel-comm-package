@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Ajency\Comm\Models\EmailSubscriber;
 use Ajency\Comm\Models\MobileSubscriber;
 
-
 /*
  * A base class that lets us define Communication methods
  * Communication methods are any methods utilized to send notification via queue process
