@@ -69,6 +69,17 @@ Communication Examples
     dd(AjComm::sendNotification($notify));
 ```
 
+```php
+    $notify = new \Ajency\Comm\Communication\Notification();
+    $notify->setEvent('welcome');
+    $notify->setProviderParams([
+        'name' => $user->name,
+        'subject' => 'Welcome to the jungle!',
+    ]);
+    $notify->setChannels(['email']);
+    AjComm::sendNotification($notify);
+```
+
 ## Changelog
 - 1.0.2
 -- Exposed functions as package APIs

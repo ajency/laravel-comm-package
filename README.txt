@@ -61,3 +61,5 @@ Examples : Notifications
         'channels' => ['web-push']
     ];
     dd(AjComm::sendNotification($event,[26]));
+
+

@@ -21,8 +21,9 @@ class Laravel
             $log->setRequest(serialize([]));
             $log->setNotificationData(serialize($notification));
             $email_id = $notification['email_id'];
-            Mail::send($notification['template_id'], $notification['provider_params'], function ($m) use ($email_id) {
-                $m->to($email_id)->subject('Welcome to the jungle!');
+            $subject = $notification['provider_params']['subject'];
+            Mail::send($notification['template_id'], $notification['provider_params'], function ($m) use ($email_id, $subject) {
+                $m->to($email_id)->subject($subject);
             });
             $log->setUserId(Auth::id());
             $log->setResponse(serialize([]));
