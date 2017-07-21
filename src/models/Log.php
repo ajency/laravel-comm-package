@@ -2,7 +2,7 @@
 namespace Ajency\Comm\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Mail;
+
 
 class Log extends Model
 {
@@ -88,6 +88,4 @@ class Log extends Model
     {
         $this->attributes['response'] = $response;
     }
-
-
 }

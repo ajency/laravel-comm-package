@@ -13,13 +13,13 @@ class CreateAjCommSubscriberEmails extends Migration
      */
     public function up()
     {
-        Schema::create('aj_comm_subscriber_emails', function (Blueprint $table) {
-            $table->integer('user_id');
-            $table->string('email',255);
+        Schema::create('aj_comm_emails', function (Blueprint $table) {
+            $table->integer('ref_id')->nullable();
+            $table->string('ref_type', 16)->nullable();
+            $table->string('email', 255);
             $table->boolean('is_primary');
             $table->timestamps();
-            $table->primary(['user_id', 'email'],'emails_pk');
-            $table->unique('email');
+            $table->unique('email', 'email_unq');
         });
     }
 
@@ -30,6 +30,6 @@ class CreateAjCommSubscriberEmails extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('aj_comm_subscriber_emails');
+        Schema::dropIfExists('aj_comm_emails');
     }
 }

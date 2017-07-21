@@ -19,7 +19,7 @@ class CreateAjCommLogs extends Migration
             $table->longText('request');
             $table->longText('notification_data');
             $table->longText('response');
-            $table->string('api',255);
+            $table->string('api', 255);
             $table->timestamps();
         });
     }

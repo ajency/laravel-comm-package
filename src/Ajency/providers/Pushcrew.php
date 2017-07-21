@@ -3,28 +3,46 @@ namespace Ajency\Comm\Providers;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\Log;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
+
+
 use Illuminate\Support\Facades\Auth;
 
-class Pushcrew {
+/*
+ * Pushcrew provider class
+ */
+class Pushcrew
+{
 
+    /**
+     * Variable containing the API url for sending webpushes via push crew
+     *
+     * @var string
+     */
     private $url = 'https://pushcrew.com/api/v1/send/individual';
 
-    function sendNotification($notification) {
+    /*
+     * Method that send the web-push using pushcrew
+     *
+     * @param array $notification
+     *
+     * No return as errors are logged using error class
+     */
+    public function sendNotification($notification)
+    {
 
         //Log it - TODD
 
         try {
-            $log = new Log();
 
+            $log = new Log();
             $post = [
+
                 "title" => $notification['provider_params']['title'],
                 "message" => $notification['provider_params']['message'],
                 "url" => $notification['provider_params']['url'],
                 "image_url" => $notification['provider_params']['image_url'],
                 "subscriber_id" => $notification['subscriber_id']
+
             ];
 
             $log->setRequest(serialize($post));
@@ -41,7 +59,6 @@ class Pushcrew {
             curl_close($ch);
             $log->setResponse(serialize($response));
             $log->save();
-
         } catch (\Exception $e) {
             $err = new Error();
             $err->setUserId(Auth::id());
