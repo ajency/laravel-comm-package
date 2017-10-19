@@ -70,13 +70,18 @@ Communication Examples
 ```
 
 ```php
+    $email = new \Ajency\Comm\Models\EmailRecipient();
+    $email->setFrom('valenie@ajency.in', 'MangaDev');
+    $email->setTo('shashank@ajency.in');
+    $email->setCc('sharath@ajency.in');
+    $email->setBcc('nutan@ajency.in');
     $notify = new \Ajency\Comm\Communication\Notification();
     $notify->setEvent('welcome');
+    $notify->setRecipientIds($email);
     $notify->setProviderParams([
-        'name' => $user->name,
+        'name' => 'Shashank',
         'subject' => 'Welcome to the jungle!',
     ]);
-    $notify->setChannels(['email']);
     AjComm::sendNotification($notify);
 ```
 
