@@ -31,6 +31,9 @@ class Laravel
             $email_id = $notification['email_id'];
             $subject = $notification['provider_params']['subject'];
             Mail::send($notification['template_id'], $notification['provider_params'], function ($m) use ($email_id, $subject) {
+                $from = $email_id->getFrom();
+                $m->from($from['address'],$from['name']);
+
                 $m->to($email_id->getTo());
                 $m->cc($email_id->getCc());
                 $m->bcc($email_id->getBcc());

@@ -3,6 +3,8 @@ namespace Ajency\Comm\Models;
 
 class EmailRecipient{
 	const TYPE = 'email';
+	private $from = '';
+	private $name = '';
 	private $to = [];
 	private $cc = [];
 	private $bcc = [];
@@ -24,9 +26,20 @@ class EmailRecipient{
 	public function setParams($params){
 		$this->params = (is_array($params))? $params:[$params];
 	}
+	public function setFrom($from = '', $name = '' ){
+		if ($from == '') config('aj-comm-channels.email.from_address');
+		if ($name == '') config('aj-comm-channels.email.from_name');
+		$this->from = $from;
+		$this->name = $name;
+		if(is_array($from)) $this->from = $from[0];
+		if(is_array($name)) $this->name = $name[0];
+	}
 
 	public function getTo(){
 		return $this->to ;
+	}
+	public function getFrom(){
+		return ['address'=>$this->from, 'name'=>$this->name];
 	}
 	public function getCc(){
 		return $this->cc ;
