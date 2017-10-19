@@ -76,9 +76,15 @@ class Communication
                         $data['event'] = $notifications->getEvent();
                         $data['provider'] = $settings['provider'];
                         $data['template_id'] = $events[$notifications->getEvent()][$settings['provider']];
-                        $data['provider_params'] = $notifications->getProviderParams();
-                        $data['recipients'] = $notifications->getRecipientIds();
-                        $provider_jobs[] = $data;
+                        // $data['provider_params'] = $notifications->getProviderParams();
+                        $recipients =  $notifications->getRecipients($channel);
+                        // dd($recipients);
+                        foreach ($recipients as $recipient) {
+                            $data['recipients'] = [$recipient];
+                            $data['provider_params'] = $recipient->getParams();
+                            $provider_jobs[] = $data;
+                        }
+                        
                     } else { //incase it does not we should log this as a warning to aid the developer
                         $error = new Error();
                         $error->setUserId(Auth::id());

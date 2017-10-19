@@ -1,12 +1,6 @@
 <?php
 namespace Ajency\Comm\Communication;
 
-
-use Ajency\Comm\Models\Subscriber_Webpush_Id;
-use App\Jobs\processEvents;
-
-use Ajency\Comm\Models\Subscriber_Email;
-
 /*
  * A class which is exposed to package user to create a Notification object, this notification object is passed along with the communication  call
  */
@@ -44,13 +38,13 @@ class Notification
      */
     public function getChannels()
     {
-        $recipients = $this->getRecipientIds();
+        $recipients     = $this->getRecipientIds();
         $this->channels = [];
-        $map = [
+        $map            = [
             'Ajency\Comm\Models\EmailRecipient' => 'email',
         ];
-        foreach($recipients as $recipient){
-            $this->channels[] = $map[get_class($recipient)]; 
+        foreach ($recipients as $recipient) {
+            $this->channels[] = $map[get_class($recipient)];
         }
         return $this->channels;
     }
@@ -103,9 +97,28 @@ class Notification
         return is_array($this->recipient_ids) ? $this->recipient_ids : [$this->recipient_ids];
     }
 
+
+    public function getRecipients($channel)
+    {
+        $map = [
+            'email' => 'Ajency\Comm\Models\EmailRecipient',
+        ];
+        $channel_class = $map[$channel];
+        $recipients    = [];
+
+        foreach ($this->recipient_ids as $recipient) {
+            if (get_class($recipient) == $channel_class) {
+                $recipients[] = $recipient;
+            }
+
+        }
+        return $recipients;
+    }
+
     /**
      * @param mixed $recipient_ids
      */
+
     public function setRecipientIds($recipient_ids)
     {
         $this->recipient_ids = $recipient_ids;
