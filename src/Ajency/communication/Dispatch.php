@@ -50,6 +50,7 @@ class Dispatch
     public function processNotification()
     {
         $notification = $this->notificationJob;
+        // dd($notification,get_class($notification['recipients'][0]));
 
         switch ($notification['channel']) {
             case 'web-push':
@@ -70,7 +71,7 @@ class Dispatch
 
             case 'email':
                 $email = new EmailSubscriber();
-                $email_id = DB::table('aj_comm_emails')->where('ref_id', $notification['recipients'][0])->value('email');
+                $email_id =  $notification['recipients'][0];
                 if ($email_id) {
                     $notification['email_id'] = $email_id;
                     $email->sendEmails($notification);

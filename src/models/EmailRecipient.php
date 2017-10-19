@@ -1,8 +1,8 @@
 <?php 
-namespace Ajency\Comm\Recipients;
+namespace Ajency\Comm\Models;
 
-class EmailRecipients{
-	const $type = 'email';
+class EmailRecipient{
+	const TYPE = 'email';
 	private $to = [];
 	private $cc = [];
 	private $bcc = [];
@@ -10,41 +10,41 @@ class EmailRecipients{
 	private $params = [];
 
 	public function setTo($to){
-		$this->to = $to;
+		$this->to = (is_array($to))? $to : [$to];
 	}
-	public function setCC($cc){
-		$this->cc = $cc;
+	public function setCc($cc){
+		$this->cc = (is_array($cc))? $cc:[$cc];
 	}
 	public function setBcc($bcc){
-		$this->bcc = $bcc;
+		$this->bcc = (is_array($bcc))? $bcc:[$bcc];
 	}
 	public function setAttachments($attachments){
-		$this->attachments = $attachments;
+		$this->attachments = (is_array($attachments))? $attachments:[$attachments];
 	}
 	public function setParams($params){
-		$this->params = $params;
+		$this->params = (is_array($params))? $params:[$params];
 	}
 
-	public function getTo($to){
+	public function getTo(){
 		return $this->to ;
 	}
-	public function getCC($cc){
+	public function getCc(){
 		return $this->cc ;
 	}
-	public function getBcc($bcc){
+	public function getBcc(){
 		return $this->bcc ;
 	}
-	public function getAttachments($attachments){
+	public function getAttachments(){
 		return $this->attachments ;
 	}
-	public function getParams($params){
+	public function getParams(){
 		return $this->params ;
 	}
 
 	public function addTo($to){
 		$this->to[] = $to;
 	}
-	public function addCC($cc){
+	public function addCc($cc){
 		$this->cc[] = $cc;
 	}
 	public function addBcc($bcc){

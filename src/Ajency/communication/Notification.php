@@ -44,7 +44,15 @@ class Notification
      */
     public function getChannels()
     {
-        return is_array($this->channels) ? $this->channels : [$this->channels];
+        $recipients = $this->getRecipientIds();
+        $this->channels = [];
+        $map = [
+            'Ajency\Comm\Models\EmailRecipient' => 'email',
+        ];
+        foreach($recipients as $recipient){
+            $this->channels[] = $map[get_class($recipient)]; 
+        }
+        return $this->channels;
     }
 
     /**

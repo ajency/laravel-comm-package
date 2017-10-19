@@ -82,6 +82,7 @@ class EmailSubscriber extends Model
      */
     public function sendEmails($notification)
     {
+        // dd($notification);
         switch ($notification['provider']) {
             case 'laravel':
                 $laravel = new Laravel();
