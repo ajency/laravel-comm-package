@@ -67,9 +67,9 @@ class Communication
         $provider_jobs = [];
         $channels = config('aj-comm-channels');
         $events = config('aj-comm-events');
+        // dd($notifications->getChannels());
         foreach ($channels as $channel => $settings) { //for each channel
             if (!$notifications->getChannels() || ($notifications->getChannels() && in_array($channel, $notifications->getChannels()))) { //Keep only channels specified as required for the event
-
                 if ($settings['provider'] !== false) { //we check if a provider is not diabled
                     if (isset($events[$notifications->getEvent()][$settings['provider']])) { //we then check if the provider has the event defined
                         $data['channel'] = $channel;
@@ -81,10 +81,9 @@ class Communication
                         // dd($recipients);
                         foreach ($recipients as $recipient) {
                             $data['recipients'] = [$recipient];
-                            $data['provider_params'] = $recipient->getParams();
+                            $data['provider_params'] = $settings;
                             $provider_jobs[] = $data;
                         }
-                        
                     } else { //incase it does not we should log this as a warning to aid the developer
                         $error = new Error();
                         $error->setUserId(Auth::id());

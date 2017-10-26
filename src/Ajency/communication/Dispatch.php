@@ -3,6 +3,7 @@ namespace Ajency\Comm\Communication;
 
 use Ajency\Comm\Models\Error;
 use Ajency\Comm\Models\WebpushSubscriber;
+use Ajency\Comm\Models\SmsSubscriber;
 use App\Jobs\processEvents;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -85,9 +86,20 @@ class Dispatch
                 }
                 break;
 
-            case 'mobile':
-
-                //TODO
+            case 'sms':
+                $sms = new SmsSubscriber();
+                $job = $notification['recipients'][0];
+                if($job){
+                    $notification['sms_id'] = $job;
+                    $sms->sendSms($notification);
+                } else {
+                    $err = new Error();
+                    $err->setMessage('Unknown Sms  : '. $notification['recipients'][0]);
+                    $err->setLevel(2);
+                    $err->setTag('not-found-sms');
+                    $err->setUserId(Auth::id());
+                    $err->save();
+                }
 
                 break;
         }

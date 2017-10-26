@@ -29,8 +29,8 @@ class Laravel
             $log->setRequest(serialize([]));
             $log->setNotificationData(serialize($notification));
             $email_id = $notification['email_id'];
-            $subject = $notification['provider_params']['email_subject'];
-            Mail::send($notification['template_id'], $notification['provider_params'], function ($m) use ($email_id, $subject) {
+            $subject = $email_id->getParams()['email_subject'];
+            Mail::send($notification['template_id'], $email_id->getParams(), function ($m) use ($email_id, $subject) {
                 $from = $email_id->getFrom();
                 $m->from($from['address'],$from['name']);
 

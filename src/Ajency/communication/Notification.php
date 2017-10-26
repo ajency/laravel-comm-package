@@ -42,6 +42,7 @@ class Notification
         $this->channels = [];
         $map            = [
             'Ajency\Comm\Models\EmailRecipient' => 'email',
+            'Ajency\Comm\Models\SmsRecipient' => 'sms',
         ];
         foreach ($recipients as $recipient) {
             $this->channels[] = $map[get_class($recipient)];
@@ -102,6 +103,7 @@ class Notification
     {
         $map = [
             'email' => 'Ajency\Comm\Models\EmailRecipient',
+            'sms' => 'Ajency\Comm\Models\SmsRecipient',
         ];
         $channel_class = $map[$channel];
         $recipients    = [];
