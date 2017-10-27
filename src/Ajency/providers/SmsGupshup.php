@@ -31,6 +31,7 @@ class SmsGupshup
             // dd($notification);
             $sms = $notification['sms_id'];
             $to_array = $sms->getTo();
+            $response = [];
             foreach ($to_array as $to) {
                 $link = 'http://enterprise.smsgupshup.com/GatewayAPI/rest?';
                 $array = [
@@ -45,16 +46,15 @@ class SmsGupshup
                 ];
                 if($sms->getOverride()) $array['override_dnd'] = 'true';
                 $link .= http_build_query($array);
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL,$link);
-                $response = curl_exec($ch);
-                // $response = http_get($link);
-                // dd($response);
-                die();
+                $ch = curl_init($link);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response[$to] = curl_exec($ch);
+                curl_close($ch);
+                if(explode(' ',$response[$to])[0] == 'error') throw new Exception($response[$to]);
             }
             
             $log->setUserId(Auth::id());
-            $log->setResponse(serialize([]));
+            $log->setResponse(serialize([$response]));
             $log->save();
 
         } catch (\Exception $e) {
