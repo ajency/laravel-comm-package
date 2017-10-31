@@ -33,12 +33,18 @@ class Laravel
             Mail::send($notification['template_id'], $email_id->getParams(), function ($m) use ($email_id, $subject) {
                 $from = $email_id->getFrom();
                 $m->from($from['address'],$from['name']);
-
                 $m->to($email_id->getTo());
                 $m->cc($email_id->getCc());
                 $m->bcc($email_id->getBcc());
-
                 $m->subject($subject);
+                $attachments = $email_id->getAttachments();
+                foreach ($attachments as $attach) {
+                    if(!isset($attach['file'])) throw new Exception("attachment without file", 1);
+                    if(!isset($attach['as']) or $attach['as']== "") $attach['as'] = basename($attach['file']);
+                    if(!isset($attach['mime'])) $attach['mime'] = "";
+                    $m->attachData(base64_decode($attach['file']),$attach['as'],['mime'=>$attach['mime']]);
+                    
+                }
             });
             $log->setUserId(Auth::id());
             $log->setResponse(serialize([]));

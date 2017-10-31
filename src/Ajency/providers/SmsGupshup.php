@@ -48,9 +48,9 @@ class SmsGupshup
                 $link .= http_build_query($array);
                 $ch = curl_init($link);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                $response[$to] = curl_exec($ch);
+                $response[$to] = ['response' => curl_exec($ch), 'request' => $link ];
                 curl_close($ch);
-                if(explode(' ',$response[$to])[0] == 'error') throw new Exception($response[$to]);
+                if(explode(' ',$response[$to]['response'])[0] == 'error') throw new Exception($response[$to]['response']);
             }
             
             $log->setUserId(Auth::id());
