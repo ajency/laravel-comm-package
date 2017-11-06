@@ -37,7 +37,7 @@ class SmsGupshup
                 $array = [
                     'method' => 'SendMessage',
                     'send_to'=> $to,
-                    'msg' => urlencode($sms->getMessage()),
+                    'msg' => $sms->getMessage(),
                     'userid' => $notification['provider_params']['username'],
                     'auth_scheme' => 'plain',
                     'password' => $notification['provider_params']['password'],
@@ -50,7 +50,7 @@ class SmsGupshup
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $response[$to] = ['response' => curl_exec($ch), 'request' => $link ];
                 curl_close($ch);
-                if(explode(' ',$response[$to]['response'])[0] == 'error') throw new Exception($response[$to]['response']);
+                if(explode(' ',$response[$to]['response'])[0] == 'error') throw new \Exception(serialize($response[$to]));
             }
             
             $log->setUserId(Auth::id());

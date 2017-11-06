@@ -39,7 +39,7 @@ class Laravel
                 $m->subject($subject);
                 $attachments = $email_id->getAttachments();
                 foreach ($attachments as $attach) {
-                    if(!isset($attach['file'])) throw new Exception("attachment without file", 1);
+                    if(!isset($attach['file'])) throw new \Exception("attachment without file", 1);
                     if(!isset($attach['as']) or $attach['as']== "") $attach['as'] = basename($attach['file']);
                     if(!isset($attach['mime'])) $attach['mime'] = "";
                     $m->attachData(base64_decode($attach['file']),$attach['as'],['mime'=>$attach['mime']]);
