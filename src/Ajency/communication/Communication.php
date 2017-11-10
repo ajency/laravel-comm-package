@@ -6,6 +6,7 @@ use Ajency\Comm\Models\Subscriber_Webpush_Id;
 use App\Jobs\ProcessEvents;
 use Illuminate\Support\Facades\Auth;
 use Ajency\Comm\Models\Subscriber_Email;
+use Carbon\Carbon;
 
 /*
  * A base class that lets us define Communication methods
@@ -42,8 +43,9 @@ class Communication
     {
         try {
             $jobs = $this->getIndividualJobs($this->getNotifications());
+            $delay = $this->getNotifications()->getDelay();
             foreach ($jobs as $job) {
-                dispatch(new ProcessEvents($job));
+                dispatch(new ProcessEvents($job))->delay(Carbon::now()->addMinutes($delay));
             }
             return 1;
         } catch (\Exception $e) {

@@ -33,6 +33,15 @@ class Notification
      */
     private $channels;
 
+
+    /**
+     * Delay in minutes for a dispatched job
+     *
+     * @var integer
+     */
+    private $delay = 0;
+
+
     /**
      * @return mixed
      */
@@ -124,5 +133,14 @@ class Notification
     public function setRecipientIds($recipient_ids)
     {
         $this->recipient_ids = $recipient_ids;
+    }
+
+    public function getDelay(){
+        if(is_integer($this->delay) and $this->delay > 0 ) return $this->delay;
+        else return 0; 
+    }
+
+    public function setDelay($delay){
+        $this->delay = $delay;
     }
 }
