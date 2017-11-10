@@ -155,6 +155,6 @@ class Notification
     }
 
     public function setPriority($priority){
-        $this->priority = ($priority == 'default' or $priority == 'high' or $priority == 'low') $priority : 'default';
+        $this->priority = ($priority == 'default' or $priority == 'high' or $priority == 'low')? $priority : 'default';
     }
 }
