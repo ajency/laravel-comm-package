@@ -42,10 +42,13 @@ class Communication
     public function beginCommunication()
     {
         try {
-            $jobs = $this->getIndividualJobs($this->getNotifications());
-            $delay = $this->getNotifications()->getDelay();
+            $notify = $this->getNotifications();
+            $jobs = $this->getIndividualJobs($notify);
+            $delay = $notify->getDelay();
             foreach ($jobs as $job) {
-                dispatch(new ProcessEvents($job))->delay(Carbon::now()->addMinutes($delay));
+                dispatch(new ProcessEvents($job))
+                    ->delay(Carbon::now()->addMinutes($delay))
+                    ->onQueue($notify->getPriority());
             }
             return 1;
         } catch (\Exception $e) {

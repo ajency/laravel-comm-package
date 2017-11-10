@@ -41,6 +41,12 @@ class Notification
      */
     private $delay = 0;
 
+     /**
+     * Priority for the dispatched notification
+     *
+     * @var string
+     */
+    private $priority = 'default';
 
     /**
      * @return mixed
@@ -142,5 +148,13 @@ class Notification
 
     public function setDelay($delay){
         $this->delay = $delay;
+    }
+
+    public function getPriority(){
+        return $this->priority;
+    }
+
+    public function setPriority($priority){
+        $this->priority = ($priority == 'default' or $priority == 'high' or $priority == 'low') $priority : 'default';
     }
 }
