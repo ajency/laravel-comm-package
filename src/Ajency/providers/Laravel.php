@@ -29,7 +29,7 @@ class Laravel
             $log->setRequest(serialize([]));
             $log->setNotificationData(serialize($notification));
             $email_id = $notification['email_id'];
-            $subject = $email_id->getParams()['email_subject'];
+            $subject = $email_id->getParams()['subject'];
             Mail::send($notification['template_id'], $email_id->getParams(), function ($m) use ($email_id, $subject) {
                 $from = $email_id->getFrom();
                 $m->from($from['address'],$from['name']);
