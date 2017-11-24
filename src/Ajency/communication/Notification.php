@@ -1,12 +1,6 @@
 <?php
 namespace Ajency\Comm\Communication;
 
-
-use Ajency\Comm\Models\Subscriber_Webpush_Id;
-use App\Jobs\processEvents;
-
-use Ajency\Comm\Models\Subscriber_Email;
-
 /*
  * A class which is exposed to package user to create a Notification object, this notification object is passed along with the communication  call
  */
@@ -39,12 +33,36 @@ class Notification
      */
     private $channels;
 
+
+    /**
+     * Delay in minutes for a dispatched job
+     *
+     * @var integer
+     */
+    private $delay = 0;
+
+     /**
+     * Priority for the dispatched notification
+     *
+     * @var string
+     */
+    private $priority = 'default';
+
     /**
      * @return mixed
      */
     public function getChannels()
     {
-        return is_array($this->channels) ? $this->channels : [$this->channels];
+        $recipients     = $this->getRecipientIds();
+        $this->channels = [];
+        $map            = [
+            'Ajency\Comm\Models\EmailRecipient' => 'email',
+            'Ajency\Comm\Models\SmsRecipient' => 'sms',
+        ];
+        foreach ($recipients as $recipient) {
+            $this->channels[] = $map[get_class($recipient)];
+        }
+        return $this->channels;
     }
 
     /**
@@ -95,11 +113,48 @@ class Notification
         return is_array($this->recipient_ids) ? $this->recipient_ids : [$this->recipient_ids];
     }
 
+
+    public function getRecipients($channel)
+    {
+        $map = [
+            'email' => 'Ajency\Comm\Models\EmailRecipient',
+            'sms' => 'Ajency\Comm\Models\SmsRecipient',
+        ];
+        $channel_class = $map[$channel];
+        $recipients    = [];
+
+        foreach ($this->recipient_ids as $recipient) {
+            if (get_class($recipient) == $channel_class) {
+                $recipients[] = $recipient;
+            }
+
+        }
+        return $recipients;
+    }
+
     /**
      * @param mixed $recipient_ids
      */
+
     public function setRecipientIds($recipient_ids)
     {
         $this->recipient_ids = $recipient_ids;
+    }
+
+    public function getDelay(){
+        if(is_integer($this->delay) and $this->delay > 0 ) return $this->delay;
+        else return 0; 
+    }
+
+    public function setDelay($delay){
+        $this->delay = $delay;
+    }
+
+    public function getPriority(){
+        return $this->priority;
+    }
+
+    public function setPriority($priority){
+        $this->priority = ($priority == 'default' or $priority == 'high' or $priority == 'low')? $priority : 'default';
     }
 }
