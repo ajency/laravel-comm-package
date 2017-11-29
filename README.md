@@ -32,43 +32,7 @@
 2. Pushcrew for push notifications
 
 ## Examples
-
-Subscribe Examples
-
-```php
-    $email = new \Ajency\Comm\Models\EmailSubscriber();
-    $email->setEmail('antonio+2dd2@ajency.in');
-    $communication_details[] = $email;
-    dd(AjComm::createSubscription($communication_details));
-```
-
-```php
-    $email = new \Ajency\Comm\Models\EmailSubscriber();
-    $email->setEmail('antonio+2ddfdd2@ajency.in');
-    $webpush = new \Ajency\Comm\Models\WebpushSubscriber();
-    $webpush->setProvider('pushcrew');
-    $webpush->setSubscriberId('09dfasdnasdna0d0a0dnad0adad9asd');
-    $communication_details[] = $email;
-    $communication_details[] = $webpush;
-    dd(AjComm::createSubscription($communication_details));
-```
-
-Communication Examples
-
-```php
-    $notify = new \Ajency\Comm\Communication\Notification();
-    $notify->setEvent('welcome');
-    $notify->setRecipientIds(17);
-    $notify->setProviderParams([
-        'title' => 'Hi, Thank you for registering with Ajency push',
-        'message' => 'Click here to know more about Push notification, edit your push settings using the gear icon above',
-        'url' => 'http://127.0.0.1:8000/benefits',
-        'image_url' => 'https://scontent.fdel1-1.fna.fbcdn.net/v/t1.0-1/c28.28.345.345/s50x50/485505_10151614542753486_1618802863_n.jpg?oh=d6831999d41e5e44c63ec62e0ac379f8&oe=59F74C83',
-    ]);
-    $notify->setChannels('web-push');
-    dd(AjComm::sendNotification($notify));
-```
-
+Email Example
 ```php
    $email = new \Ajency\Comm\Models\EmailRecipient();
         $email->setFrom('valenie@ajency.in', 'Project Manager');
@@ -92,6 +56,25 @@ Communication Examples
         $notify->setEvent('welcome');
         $notify->setRecipientIds([$email,$email1]);
         AjComm::sendNotification($notify);
+```
+
+SMS Example
+```php
+        $sms = new \Ajency\Comm\Models\SmsRecipient();
+        $sms->setTo(['919158514761','917789456585']);
+        $sms->setMessage('Hi, Welcome to FnB Circle');
+        $sms->setOverride(true);// to send to DND numbers
+        $notify = new \Ajency\Comm\Communication\Notification();
+        $notify->setEvent('new-user');
+        $notify->setRecipientIds([$sms]);
+        AjComm::sendNotification($notify);
+```
+
+You can set delay and priorities
+```php
+    $notify->setDelay(20);//integer value in minutes
+    $notify->setPriority('high'); // accepted values ['low','default','high']
+
 ```
 
 ## Changelog
