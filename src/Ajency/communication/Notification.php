@@ -55,13 +55,23 @@ class Notification
     {
         $recipients     = $this->getRecipientIds();
         $this->channels = [];
-        $map            = [
+         $map            = [
             'Ajency\Comm\Models\EmailRecipient' => 'email',
             'Ajency\Comm\Models\SmsRecipient' => 'sms',
-        ];
+        ]; 
         foreach ($recipients as $recipient) {
-            $this->channels[] = $map[get_class($recipient)];
+            if(get_class($recipient)=="Ajency\Comm\Models\AjCommUserCommunication"){
+                $recipient_attributes = $recipient->getattributes();
+                $this->channels[] =  ($recipient_attributes['type']);
+            }
+            else{
+                  $this->channels[] = $map[get_class($recipient)];
+
+            }
+            //$this->channels[] = $map[get_class($recipient)];
         }
+
+
         return $this->channels;
     }
 
@@ -124,11 +134,13 @@ class Notification
         $recipients    = [];
 
         foreach ($this->recipient_ids as $recipient) {
-            if (get_class($recipient) == $channel_class) {
+            //if (get_class($recipient) == $channel_class) {
+            if (get_class($recipient) == $channel_class || get_class($recipient) == 'Ajency\Comm\Models\AjCommUserCommunication') {
                 $recipients[] = $recipient;
-            }
+            } 
 
         }
+
         return $recipients;
     }
 

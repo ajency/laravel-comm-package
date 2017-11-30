@@ -5,6 +5,7 @@ class SmsRecipient{
 	const TYPE = 'sms';
 
 	private $to = [];
+	private $to_subscribers = [];
 	private $message;
 	private $override_dnd = false;
 	
@@ -12,6 +13,11 @@ class SmsRecipient{
 	public function setTo($to){
 		$this->to = (is_array($to))? $to : [$to];
 	}
+
+	public function setToSubscribers($to){
+		$this->to_subscribers = (is_array($to))? $to : [$to];
+	}
+
 	public function setOverride($override){
 		$this->override_dnd = $override;
 	}
@@ -19,7 +25,10 @@ class SmsRecipient{
 	public function getTo(){
 		return $this->to ;
 	}
-	
+
+	public function getToSubscribers(){
+		return $this->to_subscribers ;
+	}	
 
 	public function addTo($to){
 		$this->to[] = $to;

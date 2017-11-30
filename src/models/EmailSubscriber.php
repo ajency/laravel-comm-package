@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Auth;
  */
 class EmailSubscriber extends Model
 {
-    protected $table = 'aj_comm_emails'; //can make this a config?
+    //protected $table = 'aj_comm_emails'; //can make this a config?
+    protected $table = 'user_communications';  
 
 
     protected $attributes = [
         'ref_type' => 'User',
         'is_primary' => 0,
+        'type'       =>'email'   
     ];
 
     /**
@@ -24,15 +26,15 @@ class EmailSubscriber extends Model
      */
     public function getRefId()
     {
-        return $this->attributes['ref_id'];
+        return $this->attributes['object_id'];
     }
 
     /**
-     * @param mixed $ref_id
+     * @param mixed $object_id
      */
-    public function setRefId($ref_id)
+    public function setRefId($object_id)
     {
-        $this->attributes['ref_id'] = $ref_id;
+        $this->attributes['object_id'] = $object_id;
     }
 
 
@@ -71,8 +73,8 @@ class EmailSubscriber extends Model
 
     public function save(array $options = array())
     {
-        if (!$this->ref_id) {
-            $this->ref_id = Auth::id();
+        if (!$this->object_id) {
+            $this->object_id = Auth::id();
         }
         parent::save($options);
     }

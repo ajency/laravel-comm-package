@@ -6,6 +6,7 @@ class EmailRecipient{
 	private $from = '';
 	private $name = '';
 	private $to = [];
+	private $to_subscribers = [];
 	private $cc = [];
 	private $bcc = [];
 	private $attachments = [];
@@ -14,6 +15,10 @@ class EmailRecipient{
 	public function setTo($to){
 		$this->to = (is_array($to))? $to : [$to];
 	}
+	public function setToSubscribers($to){
+		$this->to_subscribers = (is_array($to))? $to : [$to];
+	}
+
 	public function setCc($cc){
 		$this->cc = (is_array($cc))? $cc:[$cc];
 	}
@@ -38,6 +43,11 @@ class EmailRecipient{
 	public function getTo(){
 		return $this->to ;
 	}
+
+	public function getToSubscribers(){
+		return $this->to_subscribers ;
+	}
+
 	public function getFrom(){
 		return ['address'=>$this->from, 'name'=>$this->name];
 	}

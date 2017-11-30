@@ -7,7 +7,14 @@ use Illuminate\Support\Facades\Auth;
 
 class SmsSubscriber extends Model
 {
-	 /*
+	 protected $table = 'user_communications';  
+
+     protected $attributes = [
+        
+        'type'       =>'sms'   
+    ];
+
+     /*
      * Method to split between providers
      */
     public function sendSms($notification)
