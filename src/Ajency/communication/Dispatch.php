@@ -108,8 +108,12 @@ class Dispatch
                 /*if subscriber ids are provided on sms object */
                 $toSubscribers = $job->getToSubscribers();
 
+               
+                $subscribers_no_ids = [];
+
                 if (count($toSubscribers) > 0) {
-                    $subscribers_emails = DB::table('user_communications')->select('value')->whereIn('object_id', $toSubscribers)->where('type', 'sms')->get();
+                    $subscribers_nos = DB::table('user_communications')->select('value')->whereIn('object_id', $toSubscribers)->where('type', 'sms')->get();
+
 
                     foreach ($subscribers_nos as $subscriber_no) {
                         $subscribers_no_ids[] = $subscriber_no->value;

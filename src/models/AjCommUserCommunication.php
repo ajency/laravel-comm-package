@@ -43,23 +43,9 @@ class AjCommUserCommunication extends Model
 
         }
 
-    }
-
-    public function save(array $options = array())
-    {
-        if (!$this->object_id) {
-            $this->object_id = Auth::id();
+        if (!$this->attributes['object_id']) {
+            $this->attributes['object_id'] = Auth::id();
         }
-
-        //Check if email/sms subscriber already exists in user communication  table, If yes update it with is_communication to true 
-		 
-       /* parent::updateOrCreate(
-            array('object_id' => $this->attributes['object_id'],
-            		'object_type'     => $this->attributes['object_type'], 
-            		'type'            => $this->attributes['type']),
-            $options );*/
-
-        parent::save($options);
 
     }
 

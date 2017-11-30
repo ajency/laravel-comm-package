@@ -23,10 +23,21 @@ class Subscription
      */
     public function createSubscription($communication_details)
     {
+
         DB::beginTransaction();
         try {
             foreach ($communication_details as $communication_detail) {
-                $communication_detail->save();
+
+                //$communication_detail->save();
+
+                //update if subscriber exists or create new
+                $comm_attributes = $communication_detail->getattributes();                
+
+                $update_attr = array('object_id' => $comm_attributes['object_id'],
+                    'object_type'                    => $comm_attributes['object_type'],
+                    'type'                           => $comm_attributes['type']);
+                $communication_detail->updateOrCreate($update_attr, $comm_attributes);
+
             }
             DB::commit();
             return ['success' => true, 'message' => 'Subscription stored for user successfully'];
