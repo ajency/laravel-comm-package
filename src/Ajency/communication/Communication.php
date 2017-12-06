@@ -2,11 +2,9 @@
 namespace Ajency\Comm\Communication;
 
 use Ajency\Comm\Models\Error;
-use Ajency\Comm\Models\Subscriber_Webpush_Id;
 use App\Jobs\ProcessEvents;
-use Illuminate\Support\Facades\Auth;
-use Ajency\Comm\Models\Subscriber_Email;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 /*
  * A base class that lets us define Communication methods
@@ -43,8 +41,8 @@ class Communication
     {
         try {
             $notify = $this->getNotifications();
-            $jobs = $this->getIndividualJobs($notify);
-            $delay = $notify->getDelay();
+            $jobs   = $this->getIndividualJobs($notify);
+            $delay  = $notify->getDelay();
             foreach ($jobs as $job) {
                 dispatch(new ProcessEvents($job))
                     ->delay(Carbon::now()->addMinutes($delay))
@@ -58,7 +56,6 @@ class Communication
         }
     }
 
-
     /*
      * Magic method that splits jobs based on channels
      * Return an array of jobs to be processed
@@ -70,26 +67,30 @@ class Communication
     public function getIndividualJobs(Notification $notifications)
     {
         $provider_jobs = [];
-        $channels = config('aj-comm-channels');
-        $events = config('aj-comm-events');
+        $channels      = config('aj-comm-channels');
+        $events        = config('aj-comm-events');
         // dd($notifications->getChannels());
-        foreach ($channels as $channel => $settings) { //for each channel
+        foreach ($channels as $channel => $settings) {
+            //for each channel
             if (!$notifications->getChannels() || ($notifications->getChannels() && in_array($channel, $notifications->getChannels()))) { //Keep only channels specified as required for the event
                 if ($settings['provider'] !== false) { //we check if a provider is not diabled
                     if (isset($events[$notifications->getEvent()][$settings['provider']])) { //we then check if the provider has the event defined
-                        $data['channel'] = $channel;
-                        $data['event'] = $notifications->getEvent();
-                        $data['provider'] = $settings['provider'];
+                        $data['channel']     = $channel;
+                        $data['event']       = $notifications->getEvent();
+                        $data['provider']    = $settings['provider'];
                         $data['template_id'] = $events[$notifications->getEvent()][$settings['provider']];
                         // $data['provider_params'] = $notifications->getProviderParams();
-                        $recipients =  $notifications->getRecipients($channel);
+                        $recipients = $notifications->getRecipients($channel);
                         // dd($recipients);
                         foreach ($recipients as $recipient) {
                             $data['recipients'] = [$recipient];
+
+                            $settings                = $this->overrideConfigProviderParams($notifications, $channel, $settings);
                             $data['provider_params'] = $settings;
-                            $provider_jobs[] = $data;
+                            $provider_jobs[]         = $data;
                         }
-                    } else { //incase it does not we should log this as a warning to aid the developer
+                    } else {
+                        //incase it does not we should log this as a warning to aid the developer
                         $error = new Error();
                         $error->setUserId(Auth::id());
                         $error->setMessage($settings['provider'] . 'provider does not have template defined for event ' . $notifications->getEvent());
@@ -101,5 +102,31 @@ class Communication
             }
         }
         return $provider_jobs;
+    }
+
+    /**
+     * update provider params with params set on notification channel at run time
+     *
+     * @param      <type>  $notifications  The notifications
+     * @param      <type>  $channel        The channel
+     * @param      <type>  $settings       The settings
+     *
+     * @return     <type>  ( description_of_the_return_value )
+     */
+    public function overrideConfigProviderParams($notifications, $channel, $settings)
+    {
+
+        $updated_provider_params = $settings;
+        switch ($channel) {
+            case 'email':$pd_provider_params = $notifications->getProviderParams();
+
+                if (isset($pd_provider_params['email'])) {
+                    $pd_email_provider_params = $pd_provider_params['email'];
+                    $updated_provider_params  = array_merge($settings, $pd_email_provider_params);
+                }
+        }
+
+        return ($updated_provider_params);
+
     }
 }
