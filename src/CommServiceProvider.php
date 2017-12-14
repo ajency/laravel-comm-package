@@ -31,10 +31,16 @@ class CommServiceProvider extends ServiceProvider
         return $comm->beginCommunication();
     }
 
-    public static function createSubscription($communication_details)
+    public static function createSubscriptions($communication_details)
     {
-        $sub = new Subscription\Subscription();
-        return $sub->createSubscription($communication_details);
+        
+        $result = [];
+        foreach ($communication_details as $communication_detail) {
+            $result[] = $communication_detail->createSubscriptions();
+        }
+        return $result;
+        /*$sub = new Subscription\Subscription();
+        return $sub->createSubscription($communication_details);*/
     }
 
     public static function processNotificationJob($notificationJob)
