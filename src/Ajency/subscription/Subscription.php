@@ -1,6 +1,7 @@
 <?php
 namespace Ajency\Comm\Subscription;
 
+use Ajency\Comm\campaigns\AjPepoCampaign;
 use Ajency\Comm\Models\Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class Subscription
 
     public function setAttributes($attrs)
     {
-        $this->attrs =  $attrs;
+        $this->attrs = $attrs;
     }
 
     public function getAttributes()
@@ -38,28 +39,28 @@ class Subscription
 
         DB::beginTransaction();
         try {
-           // foreach ($communication_details as $communication_detail) {
+            // foreach ($communication_details as $communication_detail) {
 
-                //$communication_detail->save();
+            //$communication_detail->save();
 
-                //update if subscriber exists or create new
-                $comm_attributes = $this->getattributes();
-                $email_values    = isset($comm_attributes['values']['email']) ? $comm_attributes['values']['email'] : [];
-                $mob_values      = isset($comm_attributes['values']['sms']) ? $comm_attributes['values']['sms']:[];
+            //update if subscriber exists or create new
+            $comm_attributes = $this->getattributes();
+            $email_values    = isset($comm_attributes['values']['email']) ? $comm_attributes['values']['email'] : [];
+            $mob_values      = isset($comm_attributes['values']['sms']) ? $comm_attributes['values']['sms'] : [];
 
-                if (is_array($email_values) & count($email_values) > 0) {
+            if (is_array($email_values) & count($email_values) > 0) {
 
-                    $subscriber_type = 'email';
-                    $result          = $this->createSubscribers($comm_attributes, $subscriber_type, $email_values);
+                $subscriber_type = 'email';
+                $result          = $this->createSubscribers($comm_attributes, $subscriber_type, $email_values);
 
-                }
+            }
 
-                if (is_array($mob_values) & count($mob_values) > 0) {
+            if (is_array($mob_values) & count($mob_values) > 0) {
 
-                    $subscriber_type = 'sms';
-                    $result          = $this->createSubscribers($comm_attributes, $subscriber_type, $mob_values);
+                $subscriber_type = 'sms';
+                $result          = $this->createSubscribers($comm_attributes, $subscriber_type, $mob_values);
 
-                }
+            }
 
             //}
             DB::commit();
@@ -99,7 +100,7 @@ class Subscription
                 $subscriber_params['value']     = $values[$i];
 
                 switch ($subscriber_type) {
-                    case 'sms' :
+                    case 'sms':
                         $subscriber_params['country_code'] = $values[$i]['country_code'];
                         $subscriber_params['value']        = $values[$i]['value'];
                         break;
@@ -112,16 +113,22 @@ class Subscription
                 }
                 $subscriber_params['type']        = $subscriber_type;
                 $subscriber_params['object_type'] = $comm_attributes['object_type'];
-                $result[]                         = $this->createSubscriber($subscriber_params);
+
+                $campaign_params = [];
+                if (isset($comm_attributes['campaigns'])) {
+                    $campaign_params = $comm_attributes['campaigns'];
+                }
+                $result_subscriber = $this->createSubscriber($subscriber_params, $campaign_params);
+                $result = array_merge($result,$result_subscriber);
 
             }
         }
         return $result;
     }
 
-    public function createSubscriber($subscriber_params)
+    public function createSubscriber($subscriber_params, $campaign_params)
     {
-        $com_subscriber_email = new \Ajency\Comm\Models\AjCommUserCommunication();
+        $com_subscriber_email = new \Ajency\Comm\Models\AjCommSubscriberCommunication();
         $com_subscriber_email->setAttributes($subscriber_params);
 
         $update_attr = array('object_id' => $subscriber_params['object_id'],
@@ -135,8 +142,82 @@ class Subscription
             $update_attr['country_code'] = $subscriber_params['country_code'];
         }
 
-        $result = $com_subscriber_email->updateOrCreate($update_attr, $subscriber_params);
+        $result[] = $com_subscriber_email->updateOrCreate($update_attr, $subscriber_params);
+
+        if (count($campaign_params) > 0 && $subscriber_params['type'] == "email") {
+
+            foreach ($campaign_params as $compaign) {
+                $result[] = $this->subscribeToCampaign($compaign, $subscriber_params['value']);
+            }
+        }
 
         return $result;
     }
+
+    public function subscribeToCampaign($compaign, $email = '')
+    {
+
+        switch ($compaign['provider']) {
+
+            case "pepo":
+
+                $result = array();
+
+                $campaign_obj             = new AjPepoCampaign();
+                $campaign_config_listings = $this->getCampaignProviderListingsConfig($compaign['provider']);
+
+                $campaign_listings = $compaign['listing'];
+                foreach ($campaign_listings as $listing) {
+                    $data['email']      = $email;
+                    $data['first_name'] = '';
+                    $data['last_name']  = '';
+
+                    $subscribe_to_campaign = isset($compaign['subscribe']) ? $compaign['subscribe'] : true;
+
+                    if (isset($campaign_config_listings[$listing])) {
+
+                        if ($subscribe_to_campaign == true) {
+                            $result[] = $campaign_obj->addToList($listing, $data);
+                        } else {
+                            $result[] = $campaign_obj->removeContactFromList($listing, $data);
+                        }
+
+                    }
+
+                }
+                
+
+                // $pepolists = $campaign_obj->getLists();
+                //dd($result); 
+                return $result;
+
+                break;
+
+            default:break;
+        }
+    }
+
+    public function getCampaignProviderListingsConfig($campaign_provider)
+    {
+        $campaign_config = config('ajency.comm.aj-comm-campaign');
+
+        if (isset($campaign_config[$campaign_provider])) {
+
+            $campaign_config = $campaign_config[$campaign_provider];
+
+            if (isset($campaign_config['listings'])) {
+
+                return $campaign_config['listings'];
+
+            } else {
+
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+
+    }
+
 }

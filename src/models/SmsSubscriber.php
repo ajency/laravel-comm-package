@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SmsSubscriber extends Model
 {
-	 protected $table = 'user_communications';  
+	 protected $table = 'aj_comm_subscriber_communications';  
 
      protected $attributes = [
         

@@ -2,54 +2,51 @@
 
 namespace Ajency\Comm\Models;
 
+use Ajency\Comm\Providers\Laravel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
-/**
- * Class to add subscriber of type (email,mobile,web-push). and pass to add subscription method
- */
 class AjCommSubscriberCommunication extends Model
 {
+    protected $table    = 'aj_comm_subscriber_communications';
+    protected $fillable = [
+        'object_id', 'object_type', 'type', 'value', 'country_code', 'is_primary', 'is_communication', 'is_verified', 'is_visible',
+    ];
 
-    protected $attributes = ['is_primary' => 0];
+    protected $attributes = [
+        'is_communication' => 1,
+        'country_code'     => 0,
+        'is_verified'      => 1,
+        'is_visible'       => 1,
+        'is_primary'       => 1,
+    ];
 
-    /**
-     * @param      <type>  $args   The arguments
-     */
-    public function setAttributes($params)
-    {
-        $subscriber_attributes = array('ref_id', 'ref_type', 'value', 'is_primary', 'service', 'country_code');
-        if (!isset($params['service'])) {
-            return false;
-        }
-
-        $cnt = 1;
-
-        foreach ($params as $param_key => $param_value) {
-            /*echo "<br/>". $cnt.") ".$param_key." - ".$param_value;
-
-            var_dump(in_array($param_key,$subscriber_attributes));*/
-            if (in_array($param_key, $subscriber_attributes)) {
-                $this->attributes[$param_key] = $param_value;
-            }
-            $cnt++;
-        }
-
-    }
-
-    /**
-     * @return     <type>  The attributes.
-     */
-    public function getAttributes()
+    public function getattributes()
     {
         return $this->attributes;
     }
 
-    public function save(array $options = array())
+    public function setAttributes($params)
     {
-        if (!$this->ref_id) {
-            $this->ref_id = Auth::id();
+        $subscriber_attributes = array('object_id', 'object_type', 'type', 'value', 'country_code', 'is_primary', 'is_communication', 'is_verified', 'is_visible');
+        if (!isset($params['type'])) {
+            return false;
         }
-        parent::save($options);
+
+        foreach ($params as $param_key => $param_value) {
+
+            if (in_array($param_key, $subscriber_attributes)) {
+
+                $this->attributes[$param_key] = $param_value;
+
+            }
+
+        }
+
+        if (!$this->attributes['object_id']) {
+            $this->attributes['object_id'] = Auth::id();
+        }
+
     }
 
     /*
@@ -57,6 +54,7 @@ class AjCommSubscriberCommunication extends Model
      */
     public function sendEmails($notification)
     {
+        // dd($notification);
         switch ($notification['provider']) {
             case 'laravel':
                 $laravel = new Laravel();
@@ -72,4 +70,5 @@ class AjCommSubscriberCommunication extends Model
                 break;
         }
     }
+
 }

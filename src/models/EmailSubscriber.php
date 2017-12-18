@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class EmailSubscriber extends Model
 {
     //protected $table = 'aj_comm_emails'; //can make this a config?
-    protected $table = 'user_communications';  
+    protected $table = 'aj_comm_subscriber_communications';  
 
 
     protected $attributes = [
@@ -20,6 +20,8 @@ class EmailSubscriber extends Model
         'is_primary' => 0,
         'type'       =>'email'   
     ];
+
+    protected $campaigns = [];
 
     /**
      * @return mixed

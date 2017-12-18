@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserCommunicationsTable extends Migration
+class CreateAjCommSubscriberCommunicationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUserCommunicationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_communications', function (Blueprint $table) {
+        Schema::create('aj_comm_subscriber_communications', function (Blueprint $table) {
             $table->increments('id');
             $table->string('object_type', 50)->nullable();
             $table->integer('object_id')->nullable();
@@ -35,6 +35,6 @@ class CreateUserCommunicationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_communications');
+        Schema::dropIfExists('aj_comm_subscriber_communications');
     }
 }
