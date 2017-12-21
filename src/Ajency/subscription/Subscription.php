@@ -51,20 +51,22 @@ class Subscription
             if (is_array($email_values) & count($email_values) > 0) {
 
                 $subscriber_type = 'email';
-                $result          = $this->createSubscribers($comm_attributes, $subscriber_type, $email_values);
+                $result[]        = $this->createSubscribers($comm_attributes, $subscriber_type, $email_values);
 
             }
 
             if (is_array($mob_values) & count($mob_values) > 0) {
 
                 $subscriber_type = 'sms';
-                $result          = $this->createSubscribers($comm_attributes, $subscriber_type, $mob_values);
+                $result[]        = $this->createSubscribers($comm_attributes, $subscriber_type, $mob_values);
 
             }
 
             //}
             DB::commit();
-            return ['success' => true, 'message' => 'Subscription stored for user successfully'];
+            //return ['success' => true, 'message' => 'Subscription stored for user successfully'];
+            return $result;
+
         } catch (\Exception $e) {
 
             /*
@@ -88,7 +90,8 @@ class Subscription
     public function createSubscribers($comm_attributes, $subscriber_type, $values)
     {
 
-        $result = [];
+        $result            = [];
+        $result_subscriber = [];
 
         if (is_array($values) & count($values) > 0) {
 
@@ -118,12 +121,12 @@ class Subscription
                 if (isset($comm_attributes['campaigns'])) {
                     $campaign_params = $comm_attributes['campaigns'];
                 }
-                $result_subscriber = $this->createSubscriber($subscriber_params, $campaign_params);
-                $result = array_merge($result,$result_subscriber);
+                $result_subscriber[] = $this->createSubscriber($subscriber_params, $campaign_params);
+                // $result              = array_merge($result, $result_subscriber);
 
             }
         }
-        return $result;
+        return $result_subscriber;
     }
 
     public function createSubscriber($subscriber_params, $campaign_params)
@@ -142,54 +145,122 @@ class Subscription
             $update_attr['country_code'] = $subscriber_params['country_code'];
         }
 
-        $result[] = $com_subscriber_email->updateOrCreate($update_attr, $subscriber_params);
+        /*DB::enableQueryLog();
+
+        DB::listen(
+        function ($sql) {
+        //  $sql - select * from `ncv_users` where `ncv_users`.`id` = ? limit 1
+        //  $bindings - [5]
+        //  $time(in milliseconds) - 0.38
+        //
+        var_dump($sql);
+        echo"==============";
+        }
+        );  */
+        $result_campaign = [];
 
         if (count($campaign_params) > 0 && $subscriber_params['type'] == "email") {
 
-            foreach ($campaign_params as $compaign) {
-                $result[] = $this->subscribeToCampaign($compaign, $subscriber_params['value']);
+            foreach ($campaign_params as $campaign) {
+                $campaign_listings        = $campaign['listing'];
+                $campaign_config_listings = $this->getCampaignProviderListingsByListname($campaign['provider'], $campaign_listings);
+
+                if (count($campaign_config_listings) <= 0) {
+
+                    $result_campaign[] = ['success' => false, 'message' => 'There are no lists avaialble with campaign provider type \'' . $campaign['provider'] . '\''];
+                } else {
+
+                    $result_campaign[] = $this->subscribeToCampaign($campaign, $subscriber_params['value'], $campaign_config_listings);
+                }
+
             }
+        }
+
+        $subscriber_params['campaigns'] = '';
+
+        $result_create = $com_subscriber_email->updateOrCreate($update_attr, $subscriber_params);
+
+        $result = [
+
+             
+            'value'       => $subscriber_params['value'],
+            'object_id'   => $subscriber_params['object_id'],
+            'object_type' => $subscriber_params['object_type'],
+            'type'        => $subscriber_params['type'],
+            'campaigns' => $result_campaign
+        ];
+
+        if ($result_create == true) {
+            $result['success'] = true;
+            $result['message'] ='Subscription stored for user successfully';
+                
+            
+        } else {
+
+            $result['success']  = false;
+            $result['message'] = $result_create; 
+
         }
 
         return $result;
     }
 
-    public function subscribeToCampaign($compaign, $email = '')
+    public function subscribeToCampaign($campaign, $email = '', $campaign_config_listings)
     {
 
-        switch ($compaign['provider']) {
+        $result_campaign = [];
+        switch ($campaign['provider']) {
 
             case "pepo":
 
                 $result = array();
 
-                $campaign_obj             = new AjPepoCampaign();
-                $campaign_config_listings = $this->getCampaignProviderListingsConfig($compaign['provider']);
+                $campaign_obj = new AjPepoCampaign();
+                //$campaign_listings = $campaign['listing'];
 
-                $campaign_listings = $compaign['listing'];
-                foreach ($campaign_listings as $listing) {
-                    $data['email']      = $email;
-                    $data['first_name'] = '';
-                    $data['last_name']  = '';
+                foreach ($campaign_config_listings as $listing) {
 
-                    $subscribe_to_campaign = isset($compaign['subscribe']) ? $compaign['subscribe'] : true;
+                    $result_cur_campaign = [];
 
-                    if (isset($campaign_config_listings[$listing])) {
+                    $data['email']         = $email;
+                    $data['first_name']    = '';
+                    $data['last_name']     = '';
+                    $config_listing_name[] = $listing->list_name;
 
-                        if ($subscribe_to_campaign == true) {
-                            $result[] = $campaign_obj->addToList($listing, $data);
+                    $subscribe_to_campaign = isset($campaign['subscribe']) ? $campaign['subscribe'] : true;
+
+                    if ($subscribe_to_campaign == true) {
+                        $result_campaign_response = $campaign_obj->addToList($listing->list_id, $data);
+                        if ($result_campaign_response->subscription_status == "subscribed") {
+                            $result_cur_campaign['success'] = true;
                         } else {
-                            $result[] = $campaign_obj->removeContactFromList($listing, $data);
+                            $result_cur_campaign['success'] = false;
                         }
 
+                    } else {
+                        $result_campaign_response = $campaign_obj->removeContactFromList($listing->list_id, $data);
+                        if ($result_campaign_response->error == '' || is_null($result_campaign_response->error)) {
+                            $result_cur_campaign['success'] = true;
+                        } else {
+                            $result_cur_campaign['success'] = false;
+                        }
                     }
+                    $result_cur_campaign['email']   = $email;
+                    $result_cur_campaign['list']    = $listing->list_name;
+                    $result_cur_campaign['message'] = $result_campaign_response->message;
 
                 }
-                
+
+                $result_campaign[] = $result_cur_campaign;
+
+                $campaign_lists_unavailable = array_diff($campaign['listing'], $config_listing_name);
+                foreach ($campaign_lists_unavailable as $unavailable_list) {
+                    $result_campaign[] = ['success' => false, 'list' => $unavailable_list, 'email' => $email, 'message' => 'The campaign list id not available'];
+                }
 
                 // $pepolists = $campaign_obj->getLists();
-                //dd($result); 
-                return $result;
+                //dd($result);
+                return $result_campaign;
 
                 break;
 
@@ -197,26 +268,34 @@ class Subscription
         }
     }
 
-    public function getCampaignProviderListingsConfig($campaign_provider)
+    public function getCampaignProviderListingsByListname($campaign_provider, $campaign_listings)
     {
-        $campaign_config = config('ajency.comm.aj-comm-campaign');
 
-        if (isset($campaign_config[$campaign_provider])) {
+        $ajcom_campaignlist = new \Ajency\Comm\Models\AjCommCampaignLists();
+        $list_result        = $ajcom_campaignlist->getCapaignListsByTypeListNames($campaign_provider, $campaign_listings);
 
-            $campaign_config = $campaign_config[$campaign_provider];
+        return $list_result;
 
-            if (isset($campaign_config['listings'])) {
+        /*
+    $campaign_config = config('ajency.comm.aj-comm-campaign');
 
-                return $campaign_config['listings'];
+    if (isset($campaign_config[$campaign_provider])) {
 
-            } else {
+    $campaign_config = $campaign_config[$campaign_provider];
 
-                return false;
-            }
+    if (isset($campaign_config['listings'])) {
 
-        } else {
-            return false;
-        }
+    return $campaign_config['listings'];
+
+    } else {
+
+    return false;
+    }
+
+    } else {
+    return false;
+    }
+     */
 
     }
 

@@ -10,7 +10,7 @@ class AjCommSubscriberCommunication extends Model
 {
     protected $table    = 'aj_comm_subscriber_communications';
     protected $fillable = [
-        'object_id', 'object_type', 'type', 'value', 'country_code', 'is_primary', 'is_communication', 'is_verified', 'is_visible',
+        'object_id', 'object_type', 'type', 'value', 'country_code', 'is_primary', 'is_communication', 'is_verified', 'is_visible','campaigns'
     ];
 
     protected $attributes = [
@@ -19,7 +19,12 @@ class AjCommSubscriberCommunication extends Model
         'is_verified'      => 1,
         'is_visible'       => 1,
         'is_primary'       => 1,
+        'campaigns'       => '',
     ];
+
+   /* protected $casts = [
+        'campaigns' => 'array',
+    ];*/
 
     public function getattributes()
     {
@@ -28,7 +33,7 @@ class AjCommSubscriberCommunication extends Model
 
     public function setAttributes($params)
     {
-        $subscriber_attributes = array('object_id', 'object_type', 'type', 'value', 'country_code', 'is_primary', 'is_communication', 'is_verified', 'is_visible');
+        $subscriber_attributes = array('object_id', 'object_type', 'type', 'value', 'country_code', 'is_primary', 'is_communication', 'is_verified', 'is_visible','campaigns');
         if (!isset($params['type'])) {
             return false;
         }

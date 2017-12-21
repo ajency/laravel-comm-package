@@ -9,12 +9,20 @@ use Ajency\Comm\sdks\campaigns\PepoCampaigns;
 class AjPepoCampaign
 {
     private $url = '';
-    private $pepo_key;
-    private $pepo_secret;
+    /* private $pepo_key;
+    private $pepo_secret;*/
+    private $pepo_config;
+
+    public function __construct()
+    {
+        $campaign_config = config('ajency.comm.aj-comm-campaign');
+        $config          = $campaign_config['pepo'];
+
+        $this->pepo_config['key']    = $config['key'];
+        $this->pepo_config['secret'] = $config['secret'];
+    }
 
     /**
-     * Adds to list.
-     *
      * @param      <type>         $list_id  Peposampaign list identifier
      * @param      <type>         $data     The data array('email'=>'abc@mailinatot.com','first_name'=>'abc','last_name'=>'xyz')
      *
@@ -22,38 +30,38 @@ class AjPepoCampaign
      */
     public function addToList($list_id, $data)
     {
-        $keys['key']      = '1';
-        $keys['secret']   = '5';
-        $pepocampaign_obj = new PepoCampaigns($keys);
-        //$pepocampaign_obj->test();
+
+        $pepocampaign_obj = new PepoCampaigns($this->pepo_config);
+        $data_default     = array('first_name' => '', 'last_name' => '');
+        $data             = array_merge($data_default, $data);
+
         $result = $pepocampaign_obj->add_contact_to_list($list_id, $data);
-        return $result;
+        return json_decode($result[0]);
 
     }
 
     /**
-     * Removes a contact from list.
-     *
-     * @param      <type>         $list_id  Peposampaign list identifier
+     * @param      <type>         $list_id  Pepo Campaign list identifier
      * @param      <type>         $data     The data array('email'=>'abc@mailinatot.com')
      *
      * @return     PepoCampaigns  ( description_of_the_return_value )
      */
-    public function removeContactFromList($list_id, $data){
-        $pepocampaign_obj = new PepoCampaigns($keys);
+    public function removeContactFromList($list_id, $data)
+    {
+
+        $pepocampaign_obj = new PepoCampaigns($this->pepo_config);
         //$pepocampaign_obj->test();
         $result = $pepocampaign_obj->remove_contact_from_list($list_id, $data);
-        return $result;  
+        return json_decode($result[0]);
     }
 
     public function getLists()
     {
-        $keys['key']      = '1';
-        $keys['secret']   = '5';
-        $pepocampaign_obj = new PepoCampaigns($keys);
-        $lists            = $pepocampaign_obj->getLists();
 
-        dd($lists);
+        $pepocampaign_obj = new PepoCampaigns($this->pepo_config);
+
+        $lists = $pepocampaign_obj->getLists();
+
         return $lists;
 
     }
