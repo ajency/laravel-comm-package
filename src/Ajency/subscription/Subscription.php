@@ -69,12 +69,6 @@ class Subscription
 
         } catch (\Exception $e) {
 
-            /*
-             * TODO - Roadmap
-             * Since our db schema takes care of unique key constraints
-             * Do we need to make this a setting since numbers get changed all the time?
-             * For Mobile we could be more flexible in the rules?
-             */
             DB::rollBack();
             $error = new Error();
             $error->setUserId(Auth::id());
@@ -90,212 +84,266 @@ class Subscription
     public function createSubscribers($comm_attributes, $subscriber_type, $values)
     {
 
-        $result            = [];
-        $result_subscriber = [];
+        try {
 
-        if (is_array($values) & count($values) > 0) {
+            $result            = [];
+            $result_subscriber = [];
 
-            $cnt_subscribers = count($values);
+            if (is_array($values) & count($values) > 0) {
 
-            for ($i = 0; $i < $cnt_subscribers; $i++) {
+                $cnt_subscribers = count($values);
 
-                $subscriber_params['object_id'] = $comm_attributes['object_id'];
-                $subscriber_params['value']     = $values[$i];
+                for ($i = 0; $i < $cnt_subscribers; $i++) {
 
-                switch ($subscriber_type) {
-                    case 'sms':
-                        $subscriber_params['country_code'] = $values[$i]['country_code'];
-                        $subscriber_params['value']        = $values[$i]['value'];
-                        break;
+                    $subscriber_params['object_id'] = $comm_attributes['object_id'];
+                    $subscriber_params['value']     = $values[$i];
 
-                    case 'sms':
+                    switch ($subscriber_type) {
+                        case 'sms':
+                            $subscriber_params['country_code'] = $values[$i]['country_code'];
+                            $subscriber_params['value']        = $values[$i]['value'];
+                            break;
 
-                        $subscriber_params['value'] = $values[$i];
-                        break;
+                        case 'sms':
+
+                            $subscriber_params['value'] = $values[$i];
+                            break;
+
+                    }
+                    $subscriber_params['type']        = $subscriber_type;
+                    $subscriber_params['object_type'] = $comm_attributes['object_type'];
+
+                    $campaign_params = [];
+                    if (isset($comm_attributes['campaigns'])) {
+                        $campaign_params = $comm_attributes['campaigns'];
+                    }
+                    $result_subscriber[] = $this->createSubscriber($subscriber_params, $campaign_params);
 
                 }
-                $subscriber_params['type']        = $subscriber_type;
-                $subscriber_params['object_type'] = $comm_attributes['object_type'];
-
-                $campaign_params = [];
-                if (isset($comm_attributes['campaigns'])) {
-                    $campaign_params = $comm_attributes['campaigns'];
-                }
-                $result_subscriber[] = $this->createSubscriber($subscriber_params, $campaign_params);
-                // $result              = array_merge($result, $result_subscriber);
-
             }
+            return $result_subscriber;
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            $error = new Error();
+            $error->setUserId(Auth::id());
+            $error->setMessage($e->getMessage());
+            $error->setLevel(3);
+            $error->setTag('subscription');
+            $error->save();
+            //Also return a message incase we need to expose an API
+            return ['success' => false, 'message' => $e->getMessage()];
         }
-        return $result_subscriber;
     }
 
     public function createSubscriber($subscriber_params, $campaign_params)
     {
-        $com_subscriber_email = new \Ajency\Comm\Models\AjCommSubscriberCommunication();
-        $com_subscriber_email->setAttributes($subscriber_params);
 
-        $update_attr = array('object_id' => $subscriber_params['object_id'],
-            'object_type'                    => $subscriber_params['object_type'],
-            'type'                           => $subscriber_params['type'],
-            'value'                          => $subscriber_params['value'],
-        );
+        try {
+            $com_subscriber_email = new \Ajency\Comm\Models\AjCommSubscriberCommunication();
+            $com_subscriber_email->setAttributes($subscriber_params);
 
-        if ($subscriber_params['type'] == 'sms') {
+            $update_attr = array(
+                'object_id'   => $subscriber_params['object_id'],
+                'object_type' => $subscriber_params['object_type'],
+                'type'        => $subscriber_params['type'],
+                'value'       => $subscriber_params['value'],
+            );
 
-            $update_attr['country_code'] = $subscriber_params['country_code'];
-        }
+            if ($subscriber_params['type'] == 'sms') {
 
-        /*DB::enableQueryLog();
+                $update_attr['country_code'] = $subscriber_params['country_code'];
+            }
 
-        DB::listen(
-        function ($sql) {
-        //  $sql - select * from `ncv_users` where `ncv_users`.`id` = ? limit 1
-        //  $bindings - [5]
-        //  $time(in milliseconds) - 0.38
-        //
-        var_dump($sql);
-        echo"==============";
-        }
-        );  */
-        $result_campaign = [];
+            $result_campaign     = [];
+            $subscribed_campaign = [];
 
-        if (count($campaign_params) > 0 && $subscriber_params['type'] == "email") {
+            if (count($campaign_params) > 0 && $subscriber_params['type'] == "email") {
 
-            foreach ($campaign_params as $campaign) {
-                $campaign_listings        = $campaign['listing'];
-                $campaign_config_listings = $this->getCampaignProviderListingsByListname($campaign['provider'], $campaign_listings);
+                foreach ($campaign_params as $campaign) {
+                    $campaign_listings        = $campaign['listing'];
+                    $campaign_config_listings = $this->getCampaignProviderListingsByListname($campaign['provider'], $campaign_listings);
 
-                if (count($campaign_config_listings) <= 0) {
+                    if (count($campaign_config_listings) <= 0) {
 
-                    $result_campaign[] = ['success' => false, 'message' => 'There are no lists avaialble with campaign provider type \'' . $campaign['provider'] . '\''];
-                } else {
+                        $result_campaign[] = ['success' => false, 'message' => 'There are no lists avaialble with campaign provider type \'' . $campaign['provider'] . '\''];
+                    } else {
 
-                    $result_campaign[] = $this->subscribeToCampaign($campaign, $subscriber_params['value'], $campaign_config_listings);
+                        $result_curr_campaign = $this->subscribeToCampaign($campaign, $subscriber_params['value'], $campaign_config_listings);
+                        $result_campaign[]    = $result_curr_campaign;
+
+                        foreach ($result_curr_campaign as $curr_campaign_subscription) {
+
+                            if ($curr_campaign_subscription['success'] == true) {
+                                $subscribed_campaign[$campaign['provider']][] = isset($curr_campaign_subscription['list']) ? $curr_campaign_subscription['list'] : '-';
+                            }
+
+                        }
+
+                    }
+
                 }
+            }
+
+            $subscriber_params['campaigns'] = is_array($subscribed_campaign) ? json_encode($subscribed_campaign) : json_encode(array());
+
+            $result_create = $com_subscriber_email->updateOrCreate($update_attr, $subscriber_params);
+
+            $result = [
+
+                'value'       => $subscriber_params['value'],
+                'object_id'   => $subscriber_params['object_id'],
+                'object_type' => $subscriber_params['object_type'],
+                'type'        => $subscriber_params['type'],
+                'campaigns'   => $result_campaign,
+            ];
+
+            if ($result_create == true) {
+                $result['success'] = true;
+                $result['message'] = 'Subscription stored for user successfully';
+
+            } else {
+
+                $result['success'] = false;
+                $result['message'] = $result_create;
 
             }
+
+            return $result;
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            $error = new Error();
+            $error->setUserId(Auth::id());
+            $error->setMessage($e->getMessage());
+            $error->setLevel(3);
+            $error->setTag('subscription');
+            $error->save();
+            //Also return a message incase we need to expose an API
+            return ['success' => false, 'message' => $e->getMessage()];
         }
-
-        $subscriber_params['campaigns'] = '';
-
-        $result_create = $com_subscriber_email->updateOrCreate($update_attr, $subscriber_params);
-
-        $result = [
-
-             
-            'value'       => $subscriber_params['value'],
-            'object_id'   => $subscriber_params['object_id'],
-            'object_type' => $subscriber_params['object_type'],
-            'type'        => $subscriber_params['type'],
-            'campaigns' => $result_campaign
-        ];
-
-        if ($result_create == true) {
-            $result['success'] = true;
-            $result['message'] ='Subscription stored for user successfully';
-                
-            
-        } else {
-
-            $result['success']  = false;
-            $result['message'] = $result_create; 
-
-        }
-
-        return $result;
     }
 
     public function subscribeToCampaign($campaign, $email = '', $campaign_config_listings)
     {
 
-        $result_campaign = [];
-        switch ($campaign['provider']) {
+        try {
+            $result_campaign = [];
+            switch ($campaign['provider']) {
 
-            case "pepo":
+                case "pepo":
 
-                $result = array();
+                    $result = array();
 
-                $campaign_obj = new AjPepoCampaign();
-                //$campaign_listings = $campaign['listing'];
+                    $campaign_obj = new AjPepoCampaign();
+                    //$campaign_listings = $campaign['listing'];
 
-                foreach ($campaign_config_listings as $listing) {
+                    foreach ($campaign_config_listings as $listing) {
 
-                    $result_cur_campaign = [];
+                        $result_cur_campaign = [];
 
-                    $data['email']         = $email;
-                    $data['first_name']    = '';
-                    $data['last_name']     = '';
-                    $config_listing_name[] = $listing->list_name;
+                        $data['email']         = $email;
+                        $data['first_name']    = '';
+                        $data['last_name']     = '';
+                        $config_listing_name[] = $listing->list_name;
 
-                    $subscribe_to_campaign = isset($campaign['subscribe']) ? $campaign['subscribe'] : true;
+                        $subscribe_to_campaign = isset($campaign['subscribe']) ? $campaign['subscribe'] : true;
 
-                    if ($subscribe_to_campaign == true) {
-                        $result_campaign_response = $campaign_obj->addToList($listing->list_id, $data);
-                        if ($result_campaign_response->subscription_status == "subscribed") {
-                            $result_cur_campaign['success'] = true;
+                        if ($subscribe_to_campaign == true) {
+                            $result_campaign_response = $campaign_obj->addToList($listing->list_id, $data);
+                            if ($result_campaign_response->subscription_status == "subscribed") {
+                                $result_cur_campaign['success'] = true;
+                            } else {
+                                $result_cur_campaign['success'] = false;
+                            }
+
                         } else {
-                            $result_cur_campaign['success'] = false;
+                            $result_campaign_response = $campaign_obj->removeContactFromList($listing->list_id, $data);
+                            if ($result_campaign_response->error == '' || is_null($result_campaign_response->error)) {
+                                $result_cur_campaign['success'] = true;
+                            } else {
+                                $result_cur_campaign['success'] = false;
+                            }
                         }
+                        $result_cur_campaign['email']   = $email;
+                        $result_cur_campaign['list']    = $listing->list_name;
+                        $result_cur_campaign['message'] = $result_campaign_response->message;
 
-                    } else {
-                        $result_campaign_response = $campaign_obj->removeContactFromList($listing->list_id, $data);
-                        if ($result_campaign_response->error == '' || is_null($result_campaign_response->error)) {
-                            $result_cur_campaign['success'] = true;
-                        } else {
-                            $result_cur_campaign['success'] = false;
-                        }
+                        $result_campaign[] = $result_cur_campaign;
+
                     }
-                    $result_cur_campaign['email']   = $email;
-                    $result_cur_campaign['list']    = $listing->list_name;
-                    $result_cur_campaign['message'] = $result_campaign_response->message;
 
-                }
+                    $campaign_lists_unavailable = array_diff($campaign['listing'], $config_listing_name);
+                    foreach ($campaign_lists_unavailable as $unavailable_list) {
+                        $result_campaign[] = ['success' => false, 'list' => $unavailable_list, 'email' => $email, 'message' => 'The campaign list id not available'];
+                    }
 
-                $result_campaign[] = $result_cur_campaign;
+                    // $pepolists = $campaign_obj->getLists();
+                    //dd($result);
+                    return $result_campaign;
 
-                $campaign_lists_unavailable = array_diff($campaign['listing'], $config_listing_name);
-                foreach ($campaign_lists_unavailable as $unavailable_list) {
-                    $result_campaign[] = ['success' => false, 'list' => $unavailable_list, 'email' => $email, 'message' => 'The campaign list id not available'];
-                }
+                    break;
 
-                // $pepolists = $campaign_obj->getLists();
-                //dd($result);
-                return $result_campaign;
+                default:break;
+            }
+        } catch (\Exception $e) {
 
-                break;
-
-            default:break;
+            DB::rollBack();
+            $error = new Error();
+            $error->setUserId(Auth::id());
+            $error->setMessage($e->getMessage());
+            $error->setLevel(3);
+            $error->setTag('subscription');
+            $error->save();
+            //Also return a message incase we need to expose an API
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 
     public function getCampaignProviderListingsByListname($campaign_provider, $campaign_listings)
     {
 
-        $ajcom_campaignlist = new \Ajency\Comm\Models\AjCommCampaignLists();
-        $list_result        = $ajcom_campaignlist->getCapaignListsByTypeListNames($campaign_provider, $campaign_listings);
+        try {
+            $ajcom_campaignlist = new \Ajency\Comm\Models\AjCommCampaignLists();
+            $list_result        = $ajcom_campaignlist->getCapaignListsByTypeListNames($campaign_provider, $campaign_listings);
 
-        return $list_result;
+            return $list_result;
 
-        /*
-    $campaign_config = config('ajency.comm.aj-comm-campaign');
+            /*
+        $campaign_config = config('ajency.comm.aj-comm-campaign');
 
-    if (isset($campaign_config[$campaign_provider])) {
+        if (isset($campaign_config[$campaign_provider])) {
 
-    $campaign_config = $campaign_config[$campaign_provider];
+        $campaign_config = $campaign_config[$campaign_provider];
 
-    if (isset($campaign_config['listings'])) {
+        if (isset($campaign_config['listings'])) {
 
-    return $campaign_config['listings'];
+        return $campaign_config['listings'];
 
-    } else {
+        } else {
 
-    return false;
-    }
+        return false;
+        }
 
-    } else {
-    return false;
-    }
-     */
+        } else {
+        return false;
+        }
+         */
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            $error = new Error();
+            $error->setUserId(Auth::id());
+            $error->setMessage($e->getMessage());
+            $error->setLevel(3);
+            $error->setTag('subscription');
+            $error->save();
+            //Also return a message incase we need to expose an API
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
 
     }
 
