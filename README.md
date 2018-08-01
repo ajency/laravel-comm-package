@@ -7,11 +7,11 @@
 
 1. Create a folder /packages/ajency/comm Clone this repo in the folder in your Laravel project
 
-2. In main project composer.json -> autoload -> psr-4 add "Ajency\\Comm\\": "packages/ajency/comm/src"
+2. In main project composer.json -> autoload -> psr-4 add "Ajency\\\\Comm\\\\": "packages/ajency/comm/src"
 
-3. In config/app.php add 'Ajency\Comm\CommServiceProvider' under providers
+3. In config/app.php add 'Ajency\\Comm\\CommServiceProvider::class' under providers
 
-4. In config/app.php add 'AjComm' => 'Ajency\Comm\CommServiceProvider' under aliases
+4. In config/app.php add 'AjComm' => Ajency\\Comm\\CommServiceProvider::class, under aliases
 
 5. Copy over packages/ajency/comm/src/jobs/processEvents.php to app/Jobs/processEvents.php
 
@@ -78,6 +78,8 @@ You can set delay and priorities
 ```
 
 ## Changelog
+- 2.0.0
+-- subscriptions stored in a single table
 - 1.0.2
 -- Exposed functions as package APIs
 -- Exposed objects to create subscriber and notification objects
